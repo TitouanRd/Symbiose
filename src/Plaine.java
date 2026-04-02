@@ -1,0 +1,51 @@
+public class Plaine extends Case {
+    private float vitesseVent;
+    private float enseileillement;
+    private float temperatureSol;
+
+    private float richesseSol;
+
+    public float getVitesseVent() {
+        return vitesseVent;
+    }
+    public void setVitesseVent(float vitesseVent) {
+        this.vitesseVent = vitesseVent;
+    }
+    public float getEnseileillement() {
+        return enseileillement;
+    }
+    public void setEnseileillement(float enseileillement) {
+        this.enseileillement = enseileillement;
+    }
+    public float getTemperatureSol() {
+        return temperatureSol;
+    }
+    public void setTemperatureSol(float temperatureSol) {
+        this.temperatureSol = temperatureSol;
+    }
+    public float getRichesseSol() {
+        return richesseSol;
+    }
+    public void setRichesseSol(float richesseSol) {
+        this.richesseSol = richesseSol;
+    }
+
+    
+    public Plaine(float pollution, float qualite, String sante_environnemental, float vitesseVent,
+            float enseileillement, float temperatureSol, float richesseSol) {
+        super(pollution, qualite, sante_environnemental);
+        this.vitesseVent = vitesseVent;
+        this.enseileillement = enseileillement;
+        this.temperatureSol = temperatureSol;
+        this.richesseSol = richesseSol;
+    }
+    public void creuser(){
+        System.err.println("Plaine creuser");
+    }
+    public void planterForet(){
+        System.err.println("Plaine planterForet");
+    }
+    public void proteger(){
+        System.err.println("Plaine proteger");
+    }
+}
