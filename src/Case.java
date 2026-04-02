@@ -3,14 +3,25 @@ public abstract class Case {
     private float qualite;
     private boolean occupation;
     private String sante_environnemental;
+    private Meteo meteo;
+
+    public Meteo getMeteo() {
+        return meteo;
+    }
+
+    public void setMeteo(Meteo meteo) {
+        this.meteo = meteo;
+    }
 
     public void fin_Tour() {
         System.err.println("Case fin_Tour");
+        this.meteo.modificationMeteo();
         this.show();
     }
 
     public void show() {
         System.err.println("Case show");
+
     }
 
     public void afficherInformations(){
