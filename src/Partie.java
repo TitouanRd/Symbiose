@@ -6,6 +6,7 @@ public class Partie {
     private int nb_actions;
     private String difficulter;
     private boolean limite_depassee;
+    private Carte carte;
 
     public Partie(String difficulter, boolean limite_depassee, int limite_tour, int nb_actions, int nb_tour, float production_energie, int ressources) {
         this.difficulter = difficulter;
@@ -15,6 +16,7 @@ public class Partie {
         this.nb_tour = nb_tour;
         this.production_energie = production_energie;
         this.ressources = ressources;
+        this.carte = new Carte(0f,0f,0f,0f,0f,0f,false,0f,0f);
     }
 
     public int getRessources() {
@@ -43,6 +45,9 @@ public class Partie {
 
     public boolean isLimite_depassee() {
         return limite_depassee;
+    }
+    public Carte getCarte() {
+        return carte;
     }
 
     public void setRessources(int ressources) {
@@ -73,13 +78,14 @@ public class Partie {
         this.limite_depassee = limite_depassee;
     }
 
-    public void Fin_Tour() {
-        System.out.println("partie Fin_Tour");
-        this.Show();
+    public void fin_Tour() {
+        System.out.println("partie fin_Tour");
+        this.show();
     }
 
-    public void Show() {
+    public void show() {
         System.out.println("partie show");
+        this.carte.show();
     }
 
     
