@@ -8,6 +8,7 @@ public class Carte {
     private float pollution;
     private float limite_pollution;
     private boolean presVile;
+    private Case[] cases;
 
     public Carte(float foret, float limite_foret, float limite_pollution, float limite_temp, float limite_vie_sauvage, float pollution, boolean presVile, float temp, float vie_sauvage) {
         this.foret = foret;
@@ -20,16 +21,6 @@ public class Carte {
         this.temp = temp;
         this.vie_sauvage = vie_sauvage;
     }
-
-    
-    public void fin_Tour() {
-        System.err.println("Carte fin_Tour");
-        this.show();
-    }
-    public void show() {
-        System.err.println("Carte show");
-    }
-
     public float getTemp() {
         return temp;
     }
@@ -100,5 +91,15 @@ public class Carte {
 
     public void setPresVile() {
         this.presVile = true;
+    }
+    public void fin_Tour() {
+        System.err.println("Carte fin_Tour");
+        this.show();
+        for (Case c : cases) {
+            c.show();
+        }
+    }
+    public void show() {
+        System.err.println("Carte show");
     }
 }

@@ -4,6 +4,24 @@ public abstract class Case {
     private boolean occupation;
     private String sante_environnemental;
     private Meteo meteo;
+    private Case[] voisines;
+    private Construction construction;
+
+    public Case[] getVoisines() {
+        return voisines;
+    }
+
+    public void setVoisines(Case[] voisines) {
+        this.voisines = voisines;
+    }
+
+    public Construction getConstruction() {
+        return construction;
+    }
+
+    public void setConstruction(Construction construction) {
+        this.construction = construction;
+    }
 
     public Meteo getMeteo() {
         return meteo;
