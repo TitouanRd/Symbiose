@@ -11,14 +11,32 @@ public class Hydrolienne extends ProdEnergie{
         this.profondeur = profondeur;
     }
 
-    public void consommerRessources() {
-        //A COMPLETER
+    @Override
+    public void consommerRessources( Case c ,Partie p){
+        // On vérifie que l'hydrolienne est bien sur un Lac pour avoir accès à la vitesse
+        if (c instanceof Lac) {
+            Lac monLac = (Lac) c;
+            float qualite = monLac.getQualite();
+            float vitesse = monLac.getVitesseCourant();
+            float res_csm = qualite * vitesse * this.profondeur * this.getNiveau() * this.getRendement();
+            p.setRessources(p.getRessources() - Math.round(res_csm));
+        }
     }
-    public void produireEnergie() {
-        //A COMPLETER
+    @Override
+    public void produireEnergie( Case c, Partie p) {
+        // On vérifie que l'hydrolienne est bien sur un Lac pour avoir accès à la vitesse
+        if (c instanceof Lac) {
+            Lac monLac = (Lac) c;
+            float qualite = monLac.getQualite();
+            float vitesse = monLac.getVitesseCourant();
+            float enrg_prod = qualite * vitesse * this.profondeur * this.getNiveau() * this.getRendement();
+            p.setProduction_energie(p.getProduction_energie() + Math.round(enrg_prod));
+        }
     }
-    public void BilanTour(){
-        //A COMPLETER
+    @Override
+    public void BilanTour(Case c, Partie p) {
+        consommerRessources(c,p);
+        produireEnergie(c,p);
     }
 
 }

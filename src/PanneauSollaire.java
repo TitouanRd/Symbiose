@@ -10,14 +10,31 @@ public class PanneauSollaire extends ProdEnergie{
     public void setExposition(float exposition) {
         this.exposition = exposition;
     }
-    public void consommerRessources(){
-        //A COMPLETER
+    @Override
+    public void consommerRessources( Case c ,Partie p){
+        // On vérifie que le panneau sollaire est bien sur une Plaine pour avoir accès à l'ensoleillement
+        if (c instanceof Plaine) {
+            Plaine maPlaine = (Plaine) c;
+            float qualite = maPlaine.getQualite();
+            float enseileillement = maPlaine.getEnseileillement();
+            float res_csm = qualite * enseileillement * this.exposition * this.getNiveau() * this.getRendement();
+            p.setRessources(p.getRessources() - Math.round(res_csm));
+        }
     }
-    public void produireEnergie(){
-        //A COMPLETER
+    @Override
+    public void produireEnergie( Case c, Partie p) {
+        // On vérifie que le panneau solaire est bien sur une Plaine pour avoir accès à l'ensoleillement'
+        if (c instanceof Plaine) {
+            Plaine maPlaine = (Plaine) c;
+            float qualite = maPlaine.getQualite();
+            float enseileillement = maPlaine.getEnseileillement();
+            float enrg_prod = qualite * enseileillement * this.exposition * this.getNiveau() * this.getRendement();
+            p.setProduction_energie(p.getProduction_energie() + Math.round(enrg_prod));
+        }
     }
-
-    public void BilanTour() {
-        //A COMPLETER
+    @Override
+    public void BilanTour(Case c, Partie p) {
+        consommerRessources(c,p);
+        produireEnergie(c,p);
     }
 }
