@@ -39,6 +39,9 @@ public class Plaine extends Case {
         this.temperatureSol = temperatureSol;
         this.richesseSol = richesseSol;
     }
+
+    
+
     public void creuser(){
         System.err.println("Plaine creuser");
     }
@@ -47,5 +50,17 @@ public class Plaine extends Case {
     }
     public void proteger(){
         System.err.println("Plaine proteger");
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" | Plaine | ");
+        //sb.append("vitesseVent=").append(vitesseVent);
+        //sb.append(", enseileillement=").append(enseileillement);
+        //sb.append(", temperatureSol=").append(temperatureSol);
+        //sb.append(", richesseSol=").append(richesseSol);
+        //sb.append('}');
+        return sb.toString();
     }
 }

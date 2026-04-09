@@ -1,5 +1,6 @@
 public class App {
     public static void main(String[] args) throws Exception {
-        System.out.println("Hello, World!3");
+        Partie partie = new Partie(null, false, 0, 0, 0, 0, 0, "petite");
+        System.out.println(partie.getCarte());
     }
 }
