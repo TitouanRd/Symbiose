@@ -1,8 +1,8 @@
+import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.BorderLayout;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -16,7 +16,6 @@ public class App {
         panel.setLayout(new BorderLayout());
         JPanel panel1 = new JPanel();
         JPanel panel3 = new JPanel();
-        JLabel label = new JLabel("Bienvenue sur Symbiose !");
         JLabel label = new JLabel("Bienvenue sur Symbiose !");
         panel1.add(label);
 
