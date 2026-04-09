@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Carte {
@@ -23,26 +24,31 @@ public class Carte {
         this.presVile = presVile;
         this.temp = temp;
         this.vie_sauvage = vie_sauvage;
-        int largeur;
-        int hauteur;
+        int lignes;
+        int colones;
         switch (tailleCarte) {
-            case "petite" : 
-                largeur = 20;
-                hauteur = 10;
-            case "moyenne":
-                largeur = 40;
-                hauteur = 20;
-            case "grande":
-                largeur = 40;
-                hauteur = 20;
-            default:
-                largeur = 20;
-                hauteur = 10;
+            case "petite" -> {
+                lignes = 20;
+                colones = 10;
+            }
+            case "moyenne" -> {
+                lignes = 40;
+                colones = 20;
+            }
+            case "grande" -> {
+                lignes = 80;
+                colones = 40;
+            }
+            default -> {
+                lignes = 20;
+                colones = 10;
+            }
         }
 
         // Initialisation de la grille
-        this.grille = new Case[largeur][hauteur];
-        this.initialiserGrilleAleatoire(largeur, hauteur);
+        this.grille = new Case[colones][lignes];
+        this.initialiserGrilleAleatoire(colones, lignes);
+        this.detectionCasesVoisines();
     }
     
 
@@ -94,7 +100,25 @@ public class Carte {
         }
     }   
 
-    
+    private void detectionCasesVoisines() {
+        for (int i = 0; i < this.grille.length; i++){
+            for (int j = 0; i < this.grille[i].length; i++){
+                ArrayList<Case> listeTemporaire = new ArrayList<>();
+
+                int[][] casVois =  {  
+                {i-1,j}, {i,j+1}, {i+1,j+1},{i+1,j}, {i+1,j-1}, {i,j-1}
+                };
+                for (int[] c : casVois) {
+                    int vx = c[0];
+                    int vy = c[1];
+                    if (vx >= 0 && vx < grille.length && vy >= 0 && vy < grille[0].length) {
+                        listeTemporaire.add(this.grille[vx][vy]);
+                    }
+                }
+                this.grille[i][j].setVoisines(listeTemporaire.toArray(new Case[6]));
+            }
+        }
+    }
 
     public float getTemp() {
         return temp;
