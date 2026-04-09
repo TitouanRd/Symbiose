@@ -17,4 +17,14 @@ public class Foret extends Case {
     public void exploiter() {
         System.err.println("Foret exploiter");
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" | Foret  | ");
+        //sb.append("recouvrementArbre=").append(recouvrementArbre);
+        //sb.append('}');
+        return sb.toString();
+    }
+
 }

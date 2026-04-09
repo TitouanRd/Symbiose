@@ -25,4 +25,15 @@ public class Lac extends Case {
     public void exploiter() {
         System.err.println("Lac exploiter");
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" |   Lac  | ");
+        //sb.append("vitesseCourant=").append(vitesseCourant);
+        //sb.append(", vitesseVent=").append(vitesseVent);
+        //sb.append('}');
+        return sb.toString();
+    }
+
 }

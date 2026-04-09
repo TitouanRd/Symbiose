@@ -2,9 +2,15 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 // --- 1. CLASSE DE BASE HEXAGONE ---
@@ -12,14 +18,17 @@ class HexagonTile {
     protected double radius;
     protected Point2D.Double position;
     protected Color baseColor;
+    protected BufferedImage sprite;
     protected int highlightTick = 0;
     protected final int maxHighlightTicks = 15;
     protected final int highlightOffset = 5;
+    protected boolean clicked = false;
 
-    public HexagonTile(double radius, Point2D.Double position, Color color) {
+    public HexagonTile(double radius, Point2D.Double position, Color color, BufferedImage sprite) {
         this.radius = radius;
         this.position = position;
         this.baseColor = color;
+        this.sprite = sprite;
     }
 
     public void update() {
@@ -61,8 +70,16 @@ class HexagonTile {
 
     public void render(Graphics2D g2d) {
         Polygon poly = getPolygon();
-        g2d.setColor(getHighlightColor());
-        g2d.fillPolygon(poly);
+        if (clicked) {
+            g2d.setColor(Color.WHITE);
+            g2d.fillPolygon(poly);
+        } else if (sprite != null) {
+            Shape previousClip = g2d.getClip();
+            g2d.setClip(poly);
+            Rectangle bounds = poly.getBounds();
+            g2d.drawImage(sprite, bounds.x, bounds.y, bounds.width, bounds.height, null);
+            g2d.setClip(previousClip);
+        }
         g2d.setColor(new Color(0, 0, 0, 50)); // Bordure discrète
         g2d.drawPolygon(poly);
     }
@@ -74,8 +91,8 @@ class HexagonTile {
 
 // --- 2. CLASSE HEXAGONE PLAT ---
 class FlatTopHexagonTile extends HexagonTile {
-    public FlatTopHexagonTile(double radius, Point2D.Double position, Color color) {
-        super(radius, position, color);
+    public FlatTopHexagonTile(double radius, Point2D.Double position, Color color, BufferedImage sprite) {
+        super(radius, position, color, sprite);
     }
 
     @Override
@@ -105,17 +122,38 @@ class FlatTopHexagonTile extends HexagonTile {
 public class HexGridApp extends JPanel {
     private List<HexagonTile> hexagons;
     private Point mousePos = new Point(0, 0);
+    private Map<String, BufferedImage> sprites;
+    private Carte carte;
     private static final Random RANDOM = new Random();
 
-    public HexGridApp() {
+    public HexGridApp(Carte carte) {
+        this.carte = carte;
         setBackground(Color.BLACK);
-        // On génère la grille avec la logique Python
-        hexagons = initHexagons(15, 10, true); 
+        sprites = new HashMap<>();
+        loadSprites();
+        // On génère la grille avec les dimensions réelles de la carte
+        int numRows = carte.getGrille().length;
+        int numCols = carte.getGrille()[0].length;
+        hexagons = initHexagons(numCols, numRows, true);
 
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
                 mousePos = e.getPoint();
+            }
+        });
+
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Point clickPos = e.getPoint();
+                for (HexagonTile h : hexagons) {
+                    if (h.getPolygon().contains(clickPos)) {
+                        h.clicked = !h.clicked;
+                        repaint();
+                        break;
+                    }
+                }
             }
         });
 
@@ -126,24 +164,38 @@ public class HexGridApp extends JPanel {
         }).start();
     }
 
+    private void loadSprites() {
+        String basePath = "C:\\Users\\titou\\Documents\\einb\\s6\\Symbiose\\test ihm\\";
+        String[] types = {"Foret", "Lac", "Plaine"};
+        for (String type : types) {
+            try {
+                BufferedImage img = ImageIO.read(new File(basePath + type.toLowerCase() + ".png"));
+                sprites.put(type, img);
+            } catch (IOException e) {
+                System.err.println("Impossible de charger " + type.toLowerCase() + ".png, utilisation d'une couleur de secours.");
+                sprites.put(type, null);
+            }
+        }
+    }
+
     private List<HexagonTile> initHexagons(int numX, int numY, boolean flatTop) {
         List<HexagonTile> list = new ArrayList<>();
         double radius = 30.0;
         
         // On commence un peu en dehors de l'écran (comme ton -50, -50)
-        HexagonTile leftmost = createHex(new Point2D.Double(50, 50), radius, flatTop);
+        HexagonTile leftmost = createHex(new Point2D.Double(50, 50), radius, flatTop, carte.getGrille()[0][0]);
         
         for (int y = 0; y < numY; y++) {
             if (y > 0) {
                 Polygon poly = leftmost.getPolygon();
                 int index = (y % 2 == 1 || flatTop) ? 2 : 4;
-                leftmost = createHex(new Point2D.Double(poly.xpoints[index], poly.ypoints[index]), radius, flatTop);
+                leftmost = createHex(new Point2D.Double(poly.xpoints[index], poly.ypoints[index]), radius, flatTop, carte.getGrille()[y][0]);
             }
             
             HexagonTile current = leftmost;
             list.add(current);
             
-            for (int x = 0; x < numX; x++) {
+            for (int x = 1; x < numX; x++) {
                 double px = current.position.x;
                 double py = current.position.y;
                 Point2D.Double nextPos;
@@ -157,17 +209,22 @@ public class HexGridApp extends JPanel {
                 } else {
                     nextPos = new Point2D.Double(px + current.getMinimalRadius() * 2, py);
                 }
-                current = createHex(nextPos, radius, flatTop);
+                current = createHex(nextPos, radius, flatTop, carte.getGrille()[y][x]);
                 list.add(current);
             }
         }
         return list;
     }
 
-    private HexagonTile createHex(Point2D.Double pos, double r, boolean flat) {
-        Color c = new Color(100, 180, 220); // même couleur pour tous les hexagones
+    private HexagonTile createHex(Point2D.Double pos, double r, boolean flat, Case caseType) {
+        String type = caseType.getClass().getSimpleName();
+        BufferedImage sprite = sprites.get(type);
+        if (sprite == null) {
+            sprite = sprites.get(type.toLowerCase());
+        }
+        Color c = new Color(0, 0, 0, 0);
         
-        return flat ? new FlatTopHexagonTile(r, pos, c) : new HexagonTile(r, pos, c);
+        return flat ? new FlatTopHexagonTile(r, pos, c, sprite) : new HexagonTile(r, pos, c, sprite);
     }
 
     @Override
@@ -189,13 +246,5 @@ public class HexGridApp extends JPanel {
                 }
             }
         }
-    }
-
-    public static void main(String[] args) {
-        JFrame f = new JFrame("Hex Grid");
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        f.add(new HexGridApp());
-        f.setSize(800, 600);
-        f.setVisible(true);
     }
 }
