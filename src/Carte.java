@@ -26,22 +26,22 @@ public class Carte {
         this.vie_sauvage = vie_sauvage;
         int lignes;
         int colones;
-        switch (tailleCarte) {
+        switch (tailleCarte) {// ici les taille c pour mon ordi 
             case "petite" -> {
                 lignes = 15;
                 colones = 10;
             }
             case "moyenne" -> {
-                lignes = 40;
-                colones = 20;
+                lignes = 25;
+                colones = 12;
             }
             case "grande" -> {
-                lignes = 80;
-                colones = 40;
+                lignes = 40;
+                colones = 18;
             }
             default -> {
                 lignes = 20;
-                colones = 10;
+                colones = 20;
             }
         }
 
