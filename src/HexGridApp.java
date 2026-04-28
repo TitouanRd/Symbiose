@@ -179,11 +179,10 @@ public class HexGridApp extends JPanel {
     }
 
     private void loadSprites() {
-        String basePath = "C:\\Users\\titou\\Documents\\einb\\s6\\Symbiose\\test ihm\\";
         String[] types = {"Foret", "Lac", "Plaine"};
         for (String type : types) {
             try {
-                BufferedImage img = ImageIO.read(new File(basePath + type.toLowerCase() + ".png"));
+                BufferedImage img = ImageIO.read(new File(type.toLowerCase() + ".png"));
                 sprites.put(type, img);
             } catch (IOException e) {
                 System.err.println("Impossible de charger " + type.toLowerCase() + ".png, utilisation d'une couleur de secours.");
