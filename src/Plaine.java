@@ -1,3 +1,8 @@
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 public class Plaine extends Case {
     private float vitesseVent;
     private float enseileillement;
@@ -63,4 +68,41 @@ public class Plaine extends Case {
         //sb.append('}');
         return sb.toString();
     }
+
+     public void show() {
+        JFrame frame = new JFrame("Hex Grid");
+
+        JPanel panel = new JPanel();
+
+        JLabel label = new JLabel("Action sur une foret :");
+        panel.add(label);
+
+
+
+        JButton creuser = new JButton("Creuser");
+        creuser.addActionListener(e -> {
+            creuser ();
+            frame.dispose();
+        });
+        panel.add(creuser);
+
+        JButton planterForet = new JButton("PlanterForet");
+        planterForet.addActionListener(e -> {        
+            planterForet();
+            frame.dispose();
+        });     
+        panel.add(planterForet);
+
+        JButton proteger = new JButton("Proteger");
+        proteger.addActionListener(e -> {        
+            proteger();
+            frame.dispose();// ferme la fenetre quand je clique
+        });     
+        panel.add(proteger);
+        frame.add(panel);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
 }
