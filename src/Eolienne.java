@@ -35,15 +35,15 @@ public class Eolienne extends ProdEnergie{
             Plaine maPlaine = (Plaine) c;
             float qualite = maPlaine.getQualite();
             float vitesseVent = maPlaine.getVitesseVent();
-            float res_csm = qualite * vitesseVent * this.hauteur * this.getNiveau() * this.getRendement();
-            p.setRessources(p.getRessources() + Math.round(res_csm));
+            float enrg_prod = qualite * vitesseVent * this.hauteur * this.getNiveau() * this.getRendement();
+            p.setProduction_energie(p.getProduction_energie() + enrg_prod);
         }
         if (c instanceof Lac) {
             Lac monLac = (Lac) c;
             float qualite = monLac.getQualite();
             float vitesseVent = monLac.getVitesseVent();
-            float res_csm = qualite * vitesseVent * this.hauteur * this.getNiveau() * this.getRendement();
-            p.setRessources(p.getRessources() + Math.round(res_csm));
+            float enrg_prod = qualite * vitesseVent * this.hauteur * this.getNiveau() * this.getRendement();
+            p.setProduction_energie(p.getProduction_energie() + 3*enrg_prod);
         }
     }
     @Override

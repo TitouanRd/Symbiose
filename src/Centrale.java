@@ -36,7 +36,7 @@ public class Centrale extends ProdEnergie{
             float qualite = maPlaine.getQualite();
             float richesseSol = maPlaine.getRichesseSol();
             float enrg_prod = qualite * richesseSol * this.charbon_dispo * this.getNiveau() * this.getRendement();
-            p.setProduction_energie(p.getProduction_energie() + Math.round(enrg_prod));
+            p.setProduction_energie(p.getProduction_energie() + 3*enrg_prod);
         }
     }
     @Override
