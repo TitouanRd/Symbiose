@@ -1,4 +1,4 @@
-public abstract class Case {
+public class Case {
     private float pollution;
     private float qualite;
     private boolean occupation;
@@ -6,6 +6,9 @@ public abstract class Case {
     private Meteo meteo;
     private Case[] voisines;
     private Construction construction;
+    private Carte carte;
+    private int x,y;
+    private TypeTerrain typeTerrain;
 
     public Case[] getVoisines() {
         return voisines;
@@ -34,12 +37,12 @@ public abstract class Case {
     public void fin_Tour() {
         System.err.println("Case fin_Tour");
         this.meteo.modificationMeteo();
+        this.typeTerrain.fin_tour();
         this.show();
     }
 
     public void show() {
-        System.err.println("Case show");
-
+        this.typeTerrain.show();
     }
 
     public void afficherInformations(){
@@ -81,10 +84,32 @@ public abstract class Case {
         this.sante_environnemental = sante_environnemental;
     }
 
-    public Case(float pollution, float qualite, String sante_environnemental) {
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public TypeTerrain getTypeTerrain() {
+        return typeTerrain;
+    }
+
+    public void setTypeTerrain(TypeTerrain typeTerrain) {
+        this.typeTerrain = typeTerrain;
+    }
+
+    public Case(float pollution, float qualite, String sante_environnemental, Carte carte, TypeTerrain typeTerrain) {
         this.pollution = pollution;
         this.qualite = qualite;
         this.occupation = false;
         this.sante_environnemental = sante_environnemental;
+        this.carte = carte;
+        this.typeTerrain = typeTerrain;
+    }
+
+    public Carte getCarte() {
+        return carte;
     }
 }

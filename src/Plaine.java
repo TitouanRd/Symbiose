@@ -6,12 +6,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-public class Plaine extends Case {
+public class Plaine extends TypeTerrain {
     private float vitesseVent;
     private float enseileillement;
     private float temperatureSol;
-
     private float richesseSol;
+    private Case parent;
 
     public float getVitesseVent() {
         return vitesseVent;
@@ -39,16 +39,21 @@ public class Plaine extends Case {
     }
 
     
-    public Plaine(float pollution, float qualite, String sante_environnemental, float vitesseVent,
-            float enseileillement, float temperatureSol, float richesseSol) {
-        super(pollution, qualite, sante_environnemental);
+    public Plaine(float vitesseVent, float enseileillement, float temperatureSol, float richesseSol, Case parent) {
         this.vitesseVent = vitesseVent;
         this.enseileillement = enseileillement;
         this.temperatureSol = temperatureSol;
         this.richesseSol = richesseSol;
+        this.parent = parent;
     }
 
-    
+    public Case getParent() {
+        return parent;
+    }
+
+    public void setParent(Case parent) {
+        this.parent = parent;
+    }
 
     public void creuser(){
         System.err.println("Plaine creuser");
@@ -72,7 +77,12 @@ public class Plaine extends Case {
         return sb.toString();
     }
 
-     public void show() {
+    @Override
+    public void fin_tour() {
+        this.show();
+    }
+
+    public void show() {
         JFrame frame = new JFrame("Plaine");
 
         JPanel panel = new JPanel();
@@ -86,9 +96,9 @@ public class Plaine extends Case {
         JTextArea infoArea = new JTextArea(5, 20);
         infoArea.setEditable(false);
         infoArea.setText(
-            "- Pollution: " + getPollution() + "\n" +
-            "- Qualité: " + getQualite() + "\n" +
-            "- Santé environnementale: " + getSante_environnemental() + "\n" +
+            "- Pollution: " + parent.getPollution() + "\n" +
+            "- Qualité: " + parent.getQualite() + "\n" +
+            "- Santé environnementale: " + parent.getSante_environnemental() + "\n" +
             "- Ensoleillement: " + enseileillement + "\n" +
             "- Temperature du sol: " + temperatureSol + "\n" +
             "- Richesse du sol: " + richesseSol + "\n" +

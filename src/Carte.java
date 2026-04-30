@@ -70,29 +70,32 @@ public class Carte {
                 // 2. Bonus de voisinage (Haut et Gauche)
                 // On regarde la case à gauche
                 if (x > 0) {
-                    if (grille[x-1][y] instanceof Foret) poidsForet += 80;
-                    if (grille[x-1][y] instanceof Lac) poidsLac += 80;
+                    if (grille[x-1][y].getTypeTerrain() instanceof Foret) poidsForet += 80;
+                    if (grille[x-1][y].getTypeTerrain() instanceof Lac) poidsLac += 80;
                 }
                 // On regarde la case en haut
                 if (y > 0) {
-                    if (grille[x][y-1] instanceof Foret) poidsForet += 80;
-                    if (grille[x][y-1] instanceof Lac) poidsLac += 80;
+                    if (grille[x][y-1].getTypeTerrain() instanceof Foret) poidsForet += 80;
+                    if (grille[x][y-1].getTypeTerrain() instanceof Lac) poidsLac += 80;
                 }
 
                 // 3. Tirage aléatoire pondéré
                 int totalPoids = poidsPlaine + poidsForet + poidsLac;
                 int tirage = random.nextInt(totalPoids);
-
+                grille[x][y] = new Case(0f,100f,"Saine",this,null);
+                TypeTerrain typeTerrain;
                 if (tirage < poidsPlaine) {
                     // Création d'une Plaine
-                    grille[x][y] = new Plaine(0f, 100f, "Saine", 10f, 50f, 15f, 80f);
+                    typeTerrain = new Plaine(10f, 50f, 15f, 80f,grille[x][y] );
                 } else if (tirage < poidsPlaine + poidsForet) {
                     // Création d'une Forêt
-                    grille[x][y] = new Foret(0f, 100f, "Saine", 70f);
+                    typeTerrain = new Foret(70f,grille[x][y]);
                 } else {
                     // Création d'un Lac
-                    grille[x][y] = new Lac(0f, 100f, "Saine", 15f, 10f);
+                    typeTerrain = new Lac( 15f, 10f,grille[x][y]);
                 }
+
+                grille[x][y].setTypeTerrain(typeTerrain);
 
                 // On assigne la météo
                 grille[x][y].setMeteo(meteoParDefaut);
@@ -100,7 +103,7 @@ public class Carte {
         }
     }   
 
-    private void detectionCasesVoisines() {
+    public  void detectionCasesVoisines() {
         for (int i = 0; i < this.grille.length; i++){
             for (int j = 0; j < this.grille[i].length; j++){
                 ArrayList<Case> listeTemporaire = new ArrayList<>();

@@ -6,9 +6,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-public class Lac extends Case {
+public class Lac extends TypeTerrain {
     private float vitesseCourant;
     private float vitesseVent;
+    private Case parent;
+
     public float getVitesseCourant() {
         return vitesseCourant;
     }
@@ -21,14 +23,22 @@ public class Lac extends Case {
     public void setVitesseVent(float vitesseVent) {
         this.vitesseVent = vitesseVent;
     }
-    
-    public Lac(float pollution, float qualite, String sante_environnemental, float vitesseCourant, float vitesseVent) {
-        super(pollution, qualite, sante_environnemental);
+
+    public Case getParent() {
+        return parent;
+    }
+
+    public void setParent(Case parent) {
+        this.parent = parent;
+    }
+
+    public Lac(float vitesseCourant, float vitesseVent, Case parent) {
         this.vitesseCourant = vitesseCourant;
         this.vitesseVent = vitesseVent;
+        this.parent = parent;
+
     }
     public void remplir() {
-        System.err.println("Lac remplire");
     }
     public void exploiter() {
         System.err.println("Lac exploiter");
@@ -42,6 +52,11 @@ public class Lac extends Case {
         //sb.append(", vitesseVent=").append(vitesseVent);
         //sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public void fin_tour() {
+        this.show();
     }
 
     public void show() {
@@ -58,11 +73,11 @@ public class Lac extends Case {
         JTextArea infoArea = new JTextArea(5, 20);
         infoArea.setEditable(false);
         infoArea.setText(
-            "- Pollution: " + getPollution() + "\n" +
-            "- Qualité: " + getQualite() + "\n" +
-            "- Santé environnementale: " + getSante_environnemental() + "\n" +
-            "- Meteo: " + getMeteo() + "\n" +
-            "- Construction: " + getConstruction() + "\n" +
+            "- Pollution: " + parent.getPollution() + "\n" +
+            "- Qualité: " + parent.getQualite() + "\n" +
+            "- Santé environnementale: " + parent.getSante_environnemental() + "\n" +
+            "- Meteo: " + parent.getMeteo() + "\n" +
+            "- Construction: " + parent.getConstruction() + "\n" +
             "- Vitesse du courant: " + vitesseCourant + "\n" +
             "- Vitesse du vent: " + vitesseVent
         );

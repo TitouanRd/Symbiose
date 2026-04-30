@@ -1,17 +1,32 @@
 import javax.swing.*;
 
-public class Foret extends Case {
+public class Foret extends TypeTerrain {
     private float recouvrementArbre;
+    private Case parent;
+
     public float getrecouvrementArbre() {
         return recouvrementArbre;
     }
     public void setRecouvrementArbre(float recouvrementArbre) {
         this.recouvrementArbre = recouvrementArbre;
     }
-    
-    public Foret(float pollution, float qualite, String sante_environnemental, float recouvrementArbre) {
-        super(pollution, qualite, sante_environnemental);
+
+    public float getRecouvrementArbre() {
+        return recouvrementArbre;
+    }
+
+    public Case getParent() {
+        return parent;
+    }
+
+    public void setParent(Case parent) {
+        this.parent = parent;
+    }
+
+    public Foret(float recouvrementArbre, Case parent) {
         this.recouvrementArbre = recouvrementArbre;
+        this.parent = parent;
+
     }
     public void raser() {
         System.err.println("Foret rasze");
@@ -30,6 +45,11 @@ public class Foret extends Case {
     }
 
     @Override
+    public void fin_tour(){
+        this.show();
+    }
+
+    @Override
     public void show() {
         JFrame frame = new JFrame("Foret");
 
@@ -44,9 +64,9 @@ public class Foret extends Case {
         JTextArea infoArea = new JTextArea(5, 20);
         infoArea.setEditable(false);
         infoArea.setText(
-            "- Pollution: " + getPollution() + "\n" +
-            "- Qualité: " + getQualite() + "\n" +
-            "- Santé environnementale: " + getSante_environnemental() + "\n" +
+            "- Pollution: " + parent.getPollution() + "\n" +
+            "- Qualité: " + parent.getQualite() + "\n" +
+            "- Santé environnementale: " + parent.getSante_environnemental() + "\n" +
             "- Recouvrement d'arbres: " + recouvrementArbre
         );
         panel.add(new JScrollPane(infoArea));
