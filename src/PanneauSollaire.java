@@ -29,7 +29,7 @@ public class PanneauSollaire extends ProdEnergie{
             float qualite = maPlaine.getQualite();
             float enseileillement = maPlaine.getEnseileillement();
             float enrg_prod = qualite * enseileillement * this.exposition * this.getNiveau() * this.getRendement();
-            p.setProduction_energie(p.getProduction_energie() + Math.round(enrg_prod));
+            p.setProduction_energie(p.getProduction_energie() + 3*enrg_prod);
         }
     }
     @Override
