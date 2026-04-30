@@ -1,7 +1,10 @@
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 public class Plaine extends Case {
     private float vitesseVent;
@@ -70,35 +73,58 @@ public class Plaine extends Case {
     }
 
      public void show() {
-        JFrame frame = new JFrame("Hex Grid");
+        JFrame frame = new JFrame("Plaine");
 
         JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        JLabel label = new JLabel("Action sur une foret :");
-        panel.add(label);
+        // Afficher les informations de la plaine
+        JLabel infoLabel = new JLabel("Informations de la plaine :");
+        infoLabel.setAlignmentX(panel.CENTER_ALIGNMENT);
+        panel.add(infoLabel);
 
+        JTextArea infoArea = new JTextArea(5, 20);
+        infoArea.setEditable(false);
+        infoArea.setText(
+            "- Pollution: " + getPollution() + "\n" +
+            "- Qualité: " + getQualite() + "\n" +
+            "- Santé environnementale: " + getSante_environnemental() + "\n" +
+            "- Ensoleillement: " + enseileillement + "\n" +
+            "- Temperature du sol: " + temperatureSol + "\n" +
+            "- Richesse du sol: " + richesseSol + "\n" +
+            "- Vitesse du vent: " + vitesseVent
+        );
+        panel.add(new JScrollPane(infoArea));
 
+        // Actions
+        JLabel actionLabel = new JLabel("Actions sur une plaine :");
+        actionLabel.setAlignmentX(panel.CENTER_ALIGNMENT);
+        panel.add(actionLabel);
 
+        JPanel buttonPanel = new JPanel();
         JButton creuser = new JButton("Creuser");
         creuser.addActionListener(e -> {
-            creuser ();
+            creuser();
             frame.dispose();
         });
-        panel.add(creuser);
+        buttonPanel.add(creuser);
 
-        JButton planterForet = new JButton("PlanterForet");
-        planterForet.addActionListener(e -> {        
+        JButton planterForet = new JButton("Planter une forêt");
+        planterForet.addActionListener(e -> {
             planterForet();
             frame.dispose();
-        });     
-        panel.add(planterForet);
+        });
+        buttonPanel.add(planterForet);
 
         JButton proteger = new JButton("Proteger");
-        proteger.addActionListener(e -> {        
+        proteger.addActionListener(e -> {
             proteger();
-            frame.dispose();// ferme la fenetre quand je clique
-        });     
-        panel.add(proteger);
+            frame.dispose();
+        });
+        buttonPanel.add(proteger);
+
+        panel.add(buttonPanel);
+
         frame.add(panel);
         frame.pack();
         frame.setLocationRelativeTo(null);
