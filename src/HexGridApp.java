@@ -22,7 +22,6 @@ class HexagonTile {
     protected int highlightTick = 0;
     protected final int maxHighlightTicks = 15;
     protected final int highlightOffset = 5;
-    protected boolean clicked = false;
 
     public HexagonTile(double radius, Point2D.Double position, Color color, BufferedImage sprite) {
         this.radius = radius;
@@ -70,10 +69,7 @@ class HexagonTile {
 
     public void render(Graphics2D g2d) {
         Polygon poly = getPolygon();
-        if (clicked) {
-            g2d.setColor(Color.WHITE);
-            g2d.fillPolygon(poly);
-        } else if (sprite != null) {
+        if (sprite != null) {
             Shape previousClip = g2d.getClip();
             g2d.setClip(poly);
             Rectangle bounds = poly.getBounds();
@@ -125,6 +121,7 @@ public class HexGridApp extends JPanel {
     private Map<String, BufferedImage> sprites;
     private Carte carte;
     private static final Random RANDOM = new Random();
+    private int numX, numY;
 
     public HexGridApp(Carte carte) {
         this.carte = carte;
@@ -135,6 +132,19 @@ public class HexGridApp extends JPanel {
         int numRows = carte.getGrille().length;
         int numCols = carte.getGrille()[0].length;
         hexagons = initHexagons(numCols, numRows, true);
+        this.numX = numCols; // hauteur
+        this.numY = numRows; // largeur
+
+        // Calculer la taille préférée basée sur la grille
+        double maxX = 0, maxY = 0;
+        for (HexagonTile h : hexagons) {
+            Polygon p = h.getPolygon();
+            for (int i = 0; i < p.npoints; i++) {
+                maxX = Math.max(maxX, p.xpoints[i]);
+                maxY = Math.max(maxY, p.ypoints[i]);
+            }
+        }
+        setPreferredSize(new Dimension((int) (maxX + 50), (int) (maxY + 50)));
 
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -145,12 +155,16 @@ public class HexGridApp extends JPanel {
 
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
+
+            
             public void mouseClicked(MouseEvent e) {
                 Point clickPos = e.getPoint();
                 for (HexagonTile h : hexagons) {
                     if (h.getPolygon().contains(clickPos)) {
-                        h.clicked = !h.clicked;
-                        repaint();
+                        int index = hexagons.indexOf(h);
+                        int gridY = index / numX;
+                        int gridX = index % numX;
+                        carte.getGrille()[gridY][gridX].show();
                         break;
                     }
                 }
@@ -165,7 +179,7 @@ public class HexGridApp extends JPanel {
     }
 
     private void loadSprites() {
-        String basePath = "C:\\Users\\titou\\Documents\\einb\\s6\\Symbiose\\test ihm\\test ihm\\";
+        String basePath = "C:\\Users\\titou\\Documents\\einb\\s6\\Symbiose\\test ihm\\";
         String[] types = {"Foret", "Lac", "Plaine"};
         for (String type : types) {
             try {
@@ -180,7 +194,13 @@ public class HexGridApp extends JPanel {
 
     private List<HexagonTile> initHexagons(int numX, int numY, boolean flatTop) {
         List<HexagonTile> list = new ArrayList<>();
-        double radius = 30.0;
+        
+        // Calculer le rayon en fonction de la taille de l'écran
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        double screenWidth = screenSize.getWidth() - 100; // marge
+        double screenHeight = screenSize.getHeight() - 100; // marge
+        double radius = Math.min(screenWidth / (numX * 1.5 + 1), screenHeight / (numY * Math.sqrt(3) + 1));
+        radius = Math.max(radius, 10); // minimum 10
         
         // On commence un peu en dehors de l'écran (comme ton -50, -50)
         HexagonTile leftmost = createHex(new Point2D.Double(50, 50), radius, flatTop, carte.getGrille()[0][0]);
