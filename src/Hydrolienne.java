@@ -30,7 +30,7 @@ public class Hydrolienne extends ProdEnergie{
             float qualite = monLac.getQualite();
             float vitesse = monLac.getVitesseCourant();
             float enrg_prod = qualite * vitesse * this.profondeur * this.getNiveau() * this.getRendement();
-            p.setProduction_energie(p.getProduction_energie() + Math.round(enrg_prod));
+            p.setProduction_energie(p.getProduction_energie() + 3*enrg_prod);
         }
     }
     @Override
