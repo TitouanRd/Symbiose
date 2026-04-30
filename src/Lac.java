@@ -1,7 +1,10 @@
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 public class Lac extends Case {
     private float vitesseCourant;
@@ -41,34 +44,56 @@ public class Lac extends Case {
         return sb.toString();
     }
 
-     public void show() {
-        JFrame frame = new JFrame("Hex Grid");
+    public void show() {
+        JFrame frame = new JFrame("Lac");
 
         JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        JLabel label = new JLabel("Action sur un lac :");
-        panel.add(label);
+        // Afficher les informations du lac
+        JLabel infoLabel = new JLabel("Informations du lac :");
+        infoLabel.setAlignmentX(panel.CENTER_ALIGNMENT);
+        panel.add(infoLabel);
 
+        JTextArea infoArea = new JTextArea(5, 20);
+        infoArea.setEditable(false);
+        infoArea.setText(
+            "- Pollution: " + getPollution() + "\n" +
+            "- Qualité: " + getQualite() + "\n" +
+            "- Santé environnementale: " + getSante_environnemental() + "\n" +
+            "- Meteo: " + getMeteo() + "\n" +
+            "- Construction: " + getConstruction() + "\n" +
+            "- Vitesse du courant: " + vitesseCourant + "\n" +
+            "- Vitesse du vent: " + vitesseVent
+        );
+        panel.add(new JScrollPane(infoArea));
 
+        // Actions
+        JLabel actionLabel = new JLabel("Actions sur un lac :");
+        actionLabel.setAlignmentX(panel.CENTER_ALIGNMENT);
+        panel.add(actionLabel);
 
+        JPanel buttonPanel = new JPanel();
         JButton exploiter = new JButton("Exploiter");
         exploiter.addActionListener(e -> {
             exploiter();
             frame.dispose();
         });
-        panel.add(exploiter);
+        buttonPanel.add(exploiter);
 
-        JButton remplir = new JButton("Remplir");
-        remplir.addActionListener(e -> {        
+        JButton remplire = new JButton("Remplir");
+        remplire.addActionListener(e -> {
             remplir();
             frame.dispose();
-        });     
-        panel.add(remplir);
+        });
+        buttonPanel.add(remplire);
+
+        panel.add(buttonPanel);
+
         frame.add(panel);
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
 
 }

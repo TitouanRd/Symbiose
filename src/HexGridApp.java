@@ -179,7 +179,7 @@ public class HexGridApp extends JPanel {
     }
 
     private void loadSprites() {
-        String[] types = {"Foret", "Lac", "Plaine"};
+         String[] types = {"Foret", "Lac", "Plaine"};
         for (String type : types) {
             try {
                 BufferedImage img = ImageIO.read(new File(type.toLowerCase() + ".png"));
