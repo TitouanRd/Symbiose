@@ -62,11 +62,15 @@ public class Foret extends TypeTerrain {
         panel.add(infoLabel);
 
         JTextArea infoArea = new JTextArea(5, 20);
+        JTextArea infoArea = new JTextArea(10, 20);
         infoArea.setEditable(false);
         infoArea.setText(
+
             "- Pollution: " + parent.getPollution() + "\n" +
             "- Qualité: " + parent.getQualite() + "\n" +
             "- Santé environnementale: " + parent.getSante_environnemental() + "\n" +
+            "- Meteo: " + parent.getMeteo() + "\n" +
+            "- Construction: " + parent.getConstruction() + "\n" +
             "- Recouvrement d'arbres: " + recouvrementArbre
         );
         panel.add(new JScrollPane(infoArea));
