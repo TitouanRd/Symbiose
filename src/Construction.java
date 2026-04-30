@@ -74,5 +74,5 @@ public abstract class Construction{
     public void setImpactPollution(float impactPollution) {
         this.impactPollution = impactPollution;
     }
-    public abstract void BilanTour();
+    public abstract void BilanTour(Case c,Partie p);
 }

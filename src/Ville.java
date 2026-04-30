@@ -12,7 +12,7 @@ public class Ville extends Construction {
 
     // SOLUTION ERREUR 1 : Implémenter la méthode manquante de Construction
     @Override
-    public void BilanTour() {
+    public void BilanTour(Case c,  Partie p) {
         System.out.println("Bilan du tour pour la ville...");
         // Logique du bilan
     }
