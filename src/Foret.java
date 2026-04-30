@@ -41,12 +41,14 @@ public class Foret extends Case {
         infoLabel.setAlignmentX(panel.CENTER_ALIGNMENT);
         panel.add(infoLabel);
 
-        JTextArea infoArea = new JTextArea(5, 20);
+        JTextArea infoArea = new JTextArea(10, 20);
         infoArea.setEditable(false);
         infoArea.setText(
             "- Pollution: " + getPollution() + "\n" +
             "- Qualité: " + getQualite() + "\n" +
             "- Santé environnementale: " + getSante_environnemental() + "\n" +
+            "- Meteo: " + getMeteo() + "\n" +
+            "- Construction: " + getConstruction() + "\n" +
             "- Recouvrement d'arbres: " + recouvrementArbre
         );
         panel.add(new JScrollPane(infoArea));
