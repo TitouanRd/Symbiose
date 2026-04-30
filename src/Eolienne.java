@@ -10,13 +10,45 @@ public class Eolienne extends ProdEnergie{
     public void setHauteur(float hauteur) {
         this.hauteur = hauteur;
     }
-    public void consommerRessources(){
-        //A COMPLETER
-    }
-    public void produireEnergie() {
-        //A COMPLETER
-    }
-    public void BilanTour(){
-        //A COMPLETER
+    @Override
+    public void consommerRessources( Case c ,Partie p){
+        // On vérifie que l'eolienne est bien sur une Plaine pour avoir accès à la vitesse du vent
+        if (c instanceof Plaine) {
+            Plaine maPlaine = (Plaine) c;
+            float qualite = maPlaine.getQualite();
+            float vitesseVent = maPlaine.getVitesseVent();
+            float res_csm = qualite * vitesseVent * this.hauteur * this.getNiveau() * this.getRendement();
+            p.setRessources(p.getRessources() - Math.round(res_csm));
         }
+        if (c instanceof Lac) {
+            Lac monLac = (Lac) c;
+            float qualite = monLac.getQualite();
+            float vitesseVent = monLac.getVitesseVent();
+            float res_csm = qualite * vitesseVent * this.hauteur * this.getNiveau() * this.getRendement();
+            p.setRessources(p.getRessources() - Math.round(res_csm));
+        }
+    }
+    @Override
+    public void produireEnergie( Case c, Partie p) {
+        // On vérifie que l'eolienne est bien sur une Plaine pour avoir accès à la vitesse du vent
+        if (c instanceof Plaine) {
+            Plaine maPlaine = (Plaine) c;
+            float qualite = maPlaine.getQualite();
+            float vitesseVent = maPlaine.getVitesseVent();
+            float res_csm = qualite * vitesseVent * this.hauteur * this.getNiveau() * this.getRendement();
+            p.setRessources(p.getRessources() + Math.round(res_csm));
+        }
+        if (c instanceof Lac) {
+            Lac monLac = (Lac) c;
+            float qualite = monLac.getQualite();
+            float vitesseVent = monLac.getVitesseVent();
+            float res_csm = qualite * vitesseVent * this.hauteur * this.getNiveau() * this.getRendement();
+            p.setRessources(p.getRessources() + Math.round(res_csm));
+        }
+    }
+    @Override
+    public void BilanTour(Case c, Partie p) {
+        consommerRessources(c,p);
+        produireEnergie(c,p);
+    }
 }
