@@ -1,6 +1,5 @@
 public class Centrale extends ProdEnergie{
     private String ressourcesUtiliser;
-    public Centrale(String ressourcesUtiliser,String type,int niveau,int cout,int productionEnergie, int productionRess,int entretienEnergie, int entretienRess,float impactQualite,float impactPollution,float impactVie, float rendement){
     private float charbon_dispo;
     public Centrale(float charbon_dispo,String ressourcesUtiliser,String type,int niveau,int cout,int productionEnergie, int productionRess,int entretienEnergie, int entretienRess,float impactQualite,float impactPollution,float impactVie, float rendement){
         super(type, niveau, cout, productionEnergie,  productionRess, entretienEnergie,  entretienRess, impactQualite, impactPollution,impactVie,rendement);
@@ -14,8 +13,6 @@ public class Centrale extends ProdEnergie{
         this.ressourcesUtiliser = ressourcesUtiliser;
     }
 
-    public void consommerRessources() {
-        //A COMPLETER
     public float getCharbon_dispo() { return charbon_dispo; }
 
     public void setCharbon_dispo(float charbon_dispo) { this.charbon_dispo = charbon_dispo; }
@@ -31,8 +28,6 @@ public class Centrale extends ProdEnergie{
             p.setRessources(p.getRessources() - Math.round(res_csm));
         }
     }
-    public void produireEnergie() {
-        //A COMPLETER
     @Override
     public void produireEnergie( Case c, Partie p) {
         // On vérifie que la centrale est bien sur une Plaine pour avoir accès à la richesse du sol
@@ -44,8 +39,6 @@ public class Centrale extends ProdEnergie{
             p.setProduction_energie(p.getProduction_energie() + Math.round(enrg_prod));
         }
     }
-    public void BilanTour(){
-        //A COMPLETER
     @Override
     public void BilanTour(Case c, Partie p) {
         consommerRessources(c,p);
