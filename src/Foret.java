@@ -29,7 +29,8 @@ public class Foret extends TypeTerrain {
 
     }
     public void raser() {
-        System.err.println("Foret rasze");
+        Plaine plaine = new Plaine(10,50f,30f,80f,this.getParent());
+        this.getParent().setTypeTerrain(plaine);
     }
     public void exploiter() {
         System.err.println("Foret exploiter");

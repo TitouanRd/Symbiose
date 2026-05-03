@@ -11,6 +11,7 @@ public class Plaine extends TypeTerrain {
     private float enseileillement;
     private float temperatureSol;
     private float richesseSol;
+    private boolean protege = false;
     private Case parent;
 
     public float getVitesseVent() {
@@ -56,13 +57,15 @@ public class Plaine extends TypeTerrain {
     }
 
     public void creuser(){
-        System.err.println("Plaine creuser");
+        Lac lac = new Lac(15f,this.getVitesseVent(),this.getParent());
+        this.getParent().setTypeTerrain(lac);
     }
     public void planterForet(){
-        System.err.println("Plaine planterForet");
+        Foret foret = new Foret(50f,this.getParent());
+        this.getParent().setTypeTerrain(foret);
     }
     public void proteger(){
-        System.err.println("Plaine proteger");
+        this.protege = true;
     }
 
     @Override

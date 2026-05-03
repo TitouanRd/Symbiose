@@ -39,6 +39,8 @@ public class Lac extends TypeTerrain {
 
     }
     public void remplir() {
+        Plaine plaine = new Plaine(this.getVitesseVent(),50f,15f,50f,this.getParent());
+        this.getParent().setTypeTerrain(plaine);
     }
     public void exploiter() {
         System.err.println("Lac exploiter");
