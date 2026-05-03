@@ -21,20 +21,18 @@ public class Ville extends Construction {
 
     public void consommerEnergie(Case c, Partie p) {
         // Logique
-        if (c instanceof Plaine) {
-            Plaine maPlaine = (Plaine) c;
-            float qualite = maPlaine.getQualite();
-            float enrg_csm = qualite  * this.getNiveau() * maPlaine.getRichesseSol();
+        if (c.getTypeTerrain() instanceof Plaine) {
+            float qualite = c.getQualite();
+            float enrg_csm = qualite  * this.getNiveau() * ((Plaine)c.getTypeTerrain()).getRichesseSol();
             p.setProduction_energie(p.getProduction_energie() - enrg_csm);
         }
     }
 
     public void consommerRessources(Case c, Partie p) {
         // Logique
-        if (c instanceof Plaine) {
-            Plaine maPlaine = (Plaine) c;
-            float qualite = maPlaine.getQualite();
-            float richesseSol = maPlaine.getRichesseSol();
+        if (c.getTypeTerrain() instanceof Plaine) {
+            float qualite = c.getQualite();
+            float richesseSol = ((Plaine)c.getTypeTerrain()).getRichesseSol();
             float res_csm = qualite * richesseSol  * this.getNiveau() ;
             p.setRessources(p.getRessources() - Math.round(res_csm));
         }

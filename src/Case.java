@@ -6,7 +6,7 @@ public class Case {
     private Meteo meteo;
     private Case[] voisines;
     private Construction construction;
-    private Carte carte;
+    private final Carte carte;
     private int x,y;
     private TypeTerrain typeTerrain;
 
@@ -38,7 +38,6 @@ public class Case {
         System.err.println("Case fin_Tour");
         this.meteo.modificationMeteo();
         this.typeTerrain.fin_tour();
-        this.show();
     }
 
     public void show() {

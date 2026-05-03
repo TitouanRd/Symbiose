@@ -20,10 +20,9 @@ public class Centrale extends ProdEnergie{
     @Override
     public void consommerRessources( Case c ,Partie p){
         // On vérifie que la centrale est bien sur une Plaine pour avoir accès à la richesse du sol
-        if (c instanceof Plaine) {
-            Plaine maPlaine = (Plaine) c;
-            float qualite = maPlaine.getQualite();
-            float richesseSol = maPlaine.getRichesseSol();
+        if (c.getTypeTerrain() instanceof Plaine) {
+            float qualite = c.getQualite();
+            float richesseSol = ((Plaine)c.getTypeTerrain()).getRichesseSol();
             float res_csm = qualite * richesseSol * this.charbon_dispo * this.getNiveau() * this.getRendement();
             p.setRessources(p.getRessources() - Math.round(res_csm));
         }
@@ -31,10 +30,9 @@ public class Centrale extends ProdEnergie{
     @Override
     public void produireEnergie( Case c, Partie p) {
         // On vérifie que la centrale est bien sur une Plaine pour avoir accès à la richesse du sol
-        if (c instanceof Plaine) {
-            Plaine maPlaine = (Plaine) c;
-            float qualite = maPlaine.getQualite();
-            float richesseSol = maPlaine.getRichesseSol();
+        if (c.getTypeTerrain() instanceof Plaine) {
+            float qualite = c.getQualite();
+            float richesseSol = ((Plaine)c.getTypeTerrain()).getRichesseSol();
             float enrg_prod = qualite * richesseSol * this.charbon_dispo * this.getNiveau() * this.getRendement();
             p.setProduction_energie(p.getProduction_energie() + 3*enrg_prod);
         }

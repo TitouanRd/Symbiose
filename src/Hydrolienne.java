@@ -14,10 +14,9 @@ public class Hydrolienne extends ProdEnergie{
     @Override
     public void consommerRessources( Case c ,Partie p){
         // On vérifie que l'hydrolienne est bien sur un Lac pour avoir accès à la vitesse
-        if (c instanceof Lac) {
-            Lac monLac = (Lac) c;
-            float qualite = monLac.getQualite();
-            float vitesse = monLac.getVitesseCourant();
+        if (c.getTypeTerrain() instanceof Lac) {
+            float qualite = c.getQualite();
+            float vitesse = ((Lac)c.getTypeTerrain()).getVitesseCourant();
             float res_csm = qualite * vitesse * this.profondeur * this.getNiveau() * this.getRendement();
             p.setRessources(p.getRessources() - Math.round(res_csm));
         }
@@ -25,10 +24,9 @@ public class Hydrolienne extends ProdEnergie{
     @Override
     public void produireEnergie( Case c, Partie p) {
         // On vérifie que l'hydrolienne est bien sur un Lac pour avoir accès à la vitesse
-        if (c instanceof Lac) {
-            Lac monLac = (Lac) c;
-            float qualite = monLac.getQualite();
-            float vitesse = monLac.getVitesseCourant();
+        if (c.getTypeTerrain() instanceof Lac) {
+            float qualite = c.getQualite();
+            float vitesse = ((Lac)c.getTypeTerrain()).getVitesseCourant();
             float enrg_prod = qualite * vitesse * this.profondeur * this.getNiveau() * this.getRendement();
             p.setProduction_energie(p.getProduction_energie() + 3*enrg_prod);
         }

@@ -13,17 +13,15 @@ public class Eolienne extends ProdEnergie{
     @Override
     public void consommerRessources( Case c ,Partie p){
         // On vérifie que l'eolienne est bien sur une Plaine pour avoir accès à la vitesse du vent
-        if (c instanceof Plaine) {
-            Plaine maPlaine = (Plaine) c;
-            float qualite = maPlaine.getQualite();
-            float vitesseVent = maPlaine.getVitesseVent();
+        if (c.getTypeTerrain() instanceof Plaine) {
+            float qualite = c.getQualite();
+            float vitesseVent = ((Plaine)c.getTypeTerrain()).getVitesseVent();
             float res_csm = qualite * vitesseVent * this.hauteur * this.getNiveau() * this.getRendement();
             p.setRessources(p.getRessources() - Math.round(res_csm));
         }
-        if (c instanceof Lac) {
-            Lac monLac = (Lac) c;
-            float qualite = monLac.getQualite();
-            float vitesseVent = monLac.getVitesseVent();
+        if (c.getTypeTerrain() instanceof Lac) {
+            float qualite = c.getQualite();
+            float vitesseVent = ((Lac)c.getTypeTerrain()).getVitesseVent();
             float res_csm = qualite * vitesseVent * this.hauteur * this.getNiveau() * this.getRendement();
             p.setRessources(p.getRessources() - Math.round(res_csm));
         }
@@ -31,17 +29,15 @@ public class Eolienne extends ProdEnergie{
     @Override
     public void produireEnergie( Case c, Partie p) {
         // On vérifie que l'eolienne est bien sur une Plaine pour avoir accès à la vitesse du vent
-        if (c instanceof Plaine) {
-            Plaine maPlaine = (Plaine) c;
-            float qualite = maPlaine.getQualite();
-            float vitesseVent = maPlaine.getVitesseVent();
+        if (c.getTypeTerrain() instanceof Plaine) {
+            float qualite = c.getQualite();
+            float vitesseVent = ((Plaine)c.getTypeTerrain()).getVitesseVent();
             float enrg_prod = qualite * vitesseVent * this.hauteur * this.getNiveau() * this.getRendement();
             p.setProduction_energie(p.getProduction_energie() + enrg_prod);
         }
-        if (c instanceof Lac) {
-            Lac monLac = (Lac) c;
-            float qualite = monLac.getQualite();
-            float vitesseVent = monLac.getVitesseVent();
+        if (c.getTypeTerrain() instanceof Lac) {
+            float qualite = c.getQualite();
+            float vitesseVent = ((Plaine)c.getTypeTerrain()).getVitesseVent();
             float enrg_prod = qualite * vitesseVent * this.hauteur * this.getNiveau() * this.getRendement();
             p.setProduction_energie(p.getProduction_energie() + 3*enrg_prod);
         }
