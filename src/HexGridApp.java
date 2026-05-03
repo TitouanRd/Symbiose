@@ -69,6 +69,10 @@ class HexagonTile {
 
     public void render(Graphics2D g2d) {
         Polygon poly = getPolygon();
+
+        g2d.setColor(getHighlightColor());
+        g2d.fillPolygon(poly);
+
         if (sprite != null) {
             Shape previousClip = g2d.getClip();
             g2d.setClip(poly);
@@ -76,7 +80,7 @@ class HexagonTile {
             g2d.drawImage(sprite, bounds.x, bounds.y, bounds.width, bounds.height, null);
             g2d.setClip(previousClip);
         }
-        g2d.setColor(new Color(0, 0, 0, 50)); // Bordure discrète
+        g2d.setColor(new Color(255, 255, 255, 100)); // Bordure discrète
         g2d.drawPolygon(poly);
     }
 
@@ -236,7 +240,7 @@ public class HexGridApp extends JPanel {
     }
 
     private HexagonTile createHex(Point2D.Double pos, double r, boolean flat, Case caseType) {
-        String type = caseType.getClass().getSimpleName();
+        String type = caseType.getTypeTerrain().getClass().getSimpleName();
         BufferedImage sprite = sprites.get(type);
         if (sprite == null) {
             sprite = sprites.get(type.toLowerCase());

@@ -196,17 +196,21 @@ public class Carte {
     }
     public void fin_Tour() {
         System.err.println("Carte fin_Tour");
-        this.show();
+        for (Case[] x : this.grille) {
+            for (Case c : x) {
+                c.fin_Tour();
+                c.show();
+            }
+        }
+    }
+
+    public void show(){
         for (Case[] x : this.grille) {
             for (Case c : x) {
                 c.show();
             }
         }
     }
-    public void show() {
-        System.err.println("Carte show");
-    }
-
     public Case[][] getGrille() {
         return grille;
     }

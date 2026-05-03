@@ -46,7 +46,6 @@ public class Foret extends TypeTerrain {
 
     @Override
     public void fin_tour(){
-        this.show();
     }
 
     @Override

@@ -56,7 +56,6 @@ public class Lac extends TypeTerrain {
 
     @Override
     public void fin_tour() {
-        this.show();
     }
 
     public void show() {
