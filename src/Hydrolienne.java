@@ -12,29 +12,33 @@ public class Hydrolienne extends ProdEnergie{
     }
 
     @Override
-    public void consommerRessources( Case c ,Partie p){
+    public float consommerRessources( Case c){
         // On vérifie que l'hydrolienne est bien sur un Lac pour avoir accès à la vitesse
+        float res_csm =0;
         if (c.getTypeTerrain() instanceof Lac) {
             float qualite = c.getQualite();
             float vitesse = ((Lac)c.getTypeTerrain()).getVitesseCourant();
-            float res_csm = qualite * vitesse * this.profondeur * this.getNiveau() * this.getRendement();
-            p.setRessources(p.getRessources() - Math.round(res_csm));
+            res_csm = qualite * vitesse * this.profondeur * this.getNiveau() * this.getRendement();
         }
+        return res_csm;
     }
     @Override
-    public void produireEnergie( Case c, Partie p) {
+    public float produireEnergie( Case c) {
         // On vérifie que l'hydrolienne est bien sur un Lac pour avoir accès à la vitesse
+        float enrg_prod =0;
         if (c.getTypeTerrain() instanceof Lac) {
             float qualite = c.getQualite();
             float vitesse = ((Lac)c.getTypeTerrain()).getVitesseCourant();
-            float enrg_prod = qualite * vitesse * this.profondeur * this.getNiveau() * this.getRendement();
-            p.setProduction_energie(p.getProduction_energie() + 3*enrg_prod);
+            enrg_prod = qualite * vitesse * this.profondeur * this.getNiveau() * this.getRendement();
         }
+        return enrg_prod;
     }
     @Override
-    public void BilanTour(Case c, Partie p) {
-        consommerRessources(c,p);
-        produireEnergie(c,p);
+    public Number[] BilanTour(Case c) {
+        Number[] retours = new Number[2];
+        retours[0] = - consommerRessources(c);
+        retours[1] =  produireEnergie(c);
+        return retours;
     }
 
 }

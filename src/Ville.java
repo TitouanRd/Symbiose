@@ -12,30 +12,33 @@ public class Ville extends Construction {
 
     // SOLUTION ERREUR 1 : Implémenter la méthode manquante de Construction
     @Override
-    public void BilanTour(Case c,  Partie p) {
+    public Number[] BilanTour(Case c) {
         System.out.println("Bilan du tour pour la ville...");
-        // Logique du bilan
-        consommerEnergie(c,p);
-        consommerRessources(c,p);
+        Number[] retours = new Number[2];
+        retours[0] = - consommerRessources(c);
+        retours[1] =  - consommerEnergie(c);
+        return retours;
     }
 
-    public void consommerEnergie(Case c, Partie p) {
+    public float consommerEnergie(Case c) {
         // Logique
+        float enrg_csm =0;
         if (c.getTypeTerrain() instanceof Plaine) {
             float qualite = c.getQualite();
-            float enrg_csm = qualite  * this.getNiveau() * ((Plaine)c.getTypeTerrain()).getRichesseSol();
-            p.setProduction_energie(p.getProduction_energie() - enrg_csm);
+            enrg_csm = qualite  * this.getNiveau() * ((Plaine)c.getTypeTerrain()).getRichesseSol();
         }
+        return enrg_csm;
     }
 
-    public void consommerRessources(Case c, Partie p) {
+    public float consommerRessources(Case c) {
         // Logique
+        float res_csm =0;
         if (c.getTypeTerrain() instanceof Plaine) {
             float qualite = c.getQualite();
             float richesseSol = ((Plaine)c.getTypeTerrain()).getRichesseSol();
-            float res_csm = qualite * richesseSol  * this.getNiveau() ;
-            p.setRessources(p.getRessources() - Math.round(res_csm));
+            res_csm = qualite * richesseSol  * this.getNiveau() ;
         }
+        return res_csm;
     }
 
     public static int getNbVille() {

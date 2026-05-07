@@ -81,7 +81,10 @@ public class Plaine extends TypeTerrain {
     }
 
     @Override
-    public void fin_tour() {
+    public Number[] fin_tour() {
+        Number[] retour = new Number[1];
+        retour[0] = 0f;
+        return retour;
     }
 
     public void show() {

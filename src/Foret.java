@@ -31,6 +31,7 @@ public class Foret extends TypeTerrain {
     public void raser() {
         Plaine plaine = new Plaine(10,50f,30f,80f,this.getParent());
         this.getParent().setTypeTerrain(plaine);
+        this.getParent().setQualite(this.getParent().getQualite()-20);
     }
     public void exploiter() {
         System.err.println("Foret exploiter");
@@ -46,7 +47,10 @@ public class Foret extends TypeTerrain {
     }
 
     @Override
-    public void fin_tour(){
+    public Number[] fin_tour(){
+        Number[] retour = new Number[1];
+        retour[0] = this.recouvrementArbre;
+        return retour;
     }
 
     @Override

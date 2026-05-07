@@ -194,14 +194,42 @@ public class Carte {
     public void setPresVile() {
         this.presVile = true;
     }
-    public void fin_Tour() {
+    public Number[] fin_Tour() {
         System.err.println("Carte fin_Tour");
+        Number[] retoursTotal = new Number[3];
+        float pollutionMoyenne = 0;
+        float qualiteMoyenne = 0;
+        float tauxForetMoyen = 0;
+        float temperaturMoyenne = 0;
+
         for (Case[] x : this.grille) {
             for (Case c : x) {
-                c.fin_Tour();
+                Number[] retours = c.fin_Tour();
                 c.show();
+                retoursTotal[0] = (float)retoursTotal[0] + (float)retours[0]; // ressources
+                retoursTotal[1] = (float)retoursTotal[1] + (float)retours[1]; // prod energie
+                pollutionMoyenne += (float)retoursTotal[2];
+                qualiteMoyenne += (float)retoursTotal[3];
+                tauxForetMoyen +=  (float)retoursTotal[4];
+                temperaturMoyenne += (float)retoursTotal[5];
+
             }
         }
+        pollutionMoyenne /= (this.grille[0].length*this.grille[1].length);
+        qualiteMoyenne /= (this.grille[0].length*this.grille[1].length);
+        tauxForetMoyen /= (this.grille[0].length*this.grille[1].length);
+        temperaturMoyenne /= (this.grille[0].length*this.grille[1].length);
+
+        if (pollutionMoyenne > this.limite_pollution) {
+            retoursTotal[3] = 1;  //limite de pollution
+        } else if (qualiteMoyenne < this.limite_vie_sauvage) {
+            retoursTotal[3] = 1;  // limite de qualite de la carte
+        } else if (tauxForetMoyen < this.limite_foret) {
+            retoursTotal[3] = 1;  //limite des forets
+        } else if (temperaturMoyenne > this.limite_temp) {
+            retoursTotal[3] = 1;
+        }
+        return retoursTotal;
     }
 
     public void show(){
