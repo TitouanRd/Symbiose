@@ -80,7 +80,10 @@ public class Partie {
 
     public void fin_Tour() {
         System.out.println("partie fin_Tour");
-        this.show();
+        this.nb_tour++;
+        if (this.nb_tour > this.limite_tour) {
+            this.limite_depassee = true;
+        }
     }
 
     public void show() {

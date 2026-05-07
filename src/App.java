@@ -1,15 +1,13 @@
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
 
 public class App {
     public static void main(String[] args) throws Exception {
-        // Lancer la grille hexagonale avec la carte
+
+
+        // Lancer choix taille grille
         JFrame frame = new JFrame("Hex Grid");
 
         JPanel panel = new JPanel();
@@ -69,10 +67,6 @@ public class App {
         panel.add(panel1, BorderLayout.NORTH);
         panel.add(panel4, BorderLayout.CENTER);
         frame.add(panel);
-
-
-//ici je veut que je clique sur une des tailles de carte et que ça lance la grille hexagonale avec la carte correspondante, mais je n'arrive pas à faire le lien entre les boutons et la création de la carte, est ce que tu peux m'aider ?
-
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -84,7 +78,56 @@ public class App {
             Partie partie = new Partie(null, false, 0, 0, 0, 0, 0, taille);
             JFrame grilleFrame = new JFrame("Hex Grid - " + taille);
             grilleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            grilleFrame.add(new HexGridApp(partie.getCarte()));
+
+
+            // Créer un panel principal avec BorderLayout
+            JPanel mainPanel = new JPanel(new BorderLayout());
+
+
+            // Récupérer les valeurs des attributs de l'objet partie
+            int ressources=partie.getRessources();
+            float production_energie=partie.getProduction_energie();
+            int nb_tour=partie.getNb_tour();
+            int limite_tour=partie.getLimite_tour();
+            int nb_actions=partie.getNb_actions();
+
+
+            // Panel du haut pour afficher du texte et bouton
+            JPanel topPanel = new JPanel(new BorderLayout());
+
+            JTextArea infoArea = new JTextArea(1, 60);
+            infoArea.setEditable(false);
+            infoArea.setText(
+            "- Ressources: " + ressources +
+            "    - Production d'énergie: " + production_energie +
+            "    - Nombre de tours: " + nb_tour +
+            "    - Limite de tours: " + limite_tour +
+            "    - Nombre d'actions: " + nb_actions
+             );
+            topPanel.add(new JScrollPane(infoArea), BorderLayout.CENTER);
+
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            JButton fin_tour = new JButton("Fin de tour");
+              fin_tour.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //ici lance actions de fin de tour
+                partie.fin_Tour();
+            }
+        });
+
+
+
+            buttonPanel.add(fin_tour);
+            topPanel.add(buttonPanel, BorderLayout.EAST);
+
+            mainPanel.add(topPanel, BorderLayout.NORTH);
+
+            // Panel du milieu pour la grille
+            HexGridApp gridApp = new HexGridApp(partie.getCarte());
+            mainPanel.add(gridApp, BorderLayout.CENTER);
+            
+            grilleFrame.add(mainPanel); 
             grilleFrame.pack();
             grilleFrame.setLocationRelativeTo(null);
             grilleFrame.setVisible(true);
