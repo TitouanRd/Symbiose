@@ -59,10 +59,12 @@ public class Plaine extends TypeTerrain {
     public void creuser(){
         Lac lac = new Lac(15f,this.getVitesseVent(),this.getParent());
         this.getParent().setTypeTerrain(lac);
+        this.getParent().getCarte().getPartie().notifyMapChanged();// rafraichie la grille pour afficher le lac
     }
     public void planterForet(){
         Foret foret = new Foret(50f,this.getParent());
         this.getParent().setTypeTerrain(foret);
+        this.getParent().getCarte().getPartie().notifyMapChanged();// rafraichie la grille pour afficher la foret
     }
     public void proteger(){
         this.protege = true;
@@ -84,7 +86,7 @@ public class Plaine extends TypeTerrain {
     public void fin_tour() {
     }
 
-    public void show() {
+    public void show() {// affiche les info de la plaine et les actions possibles dans une nouvelle fenêtre
         JFrame frame = new JFrame("Plaine");
 
         JPanel panel = new JPanel();
@@ -118,31 +120,48 @@ public class Plaine extends TypeTerrain {
         JPanel buttonPanel = new JPanel();
         JButton creuser = new JButton("Creuser");
         creuser.addActionListener(e -> {
-            creuser();
+            if (nb_tour()) {// vérifie si le joueur a des actions restantes pour ce tour
+                creuser();
+            }
             frame.dispose();
         });
         buttonPanel.add(creuser);
 
         JButton planterForet = new JButton("Planter une forêt");
         planterForet.addActionListener(e -> {
-            planterForet();
+            if (nb_tour()) {
+                planterForet();
+            }
             frame.dispose();
         });
         buttonPanel.add(planterForet);
 
         JButton proteger = new JButton("Proteger");
         proteger.addActionListener(e -> {
-            proteger();
+            if (nb_tour()) {
+                proteger();
+            }
             frame.dispose();
         });
         buttonPanel.add(proteger);
-
         panel.add(buttonPanel);
-
         frame.add(panel);
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+
+    @Override
+    // vérifie si le joueur a des actions restantes pour ce tour, si oui décrémente le nombre d'actions et retourne true, sinon retourne false
+    public boolean  nb_tour() {
+        Partie partie = parent.getCarte().getPartie();
+        int actionsRestantes = partie.getNb_actions();
+        System.out.println("Actions restantes avant action: " + actionsRestantes);
+        if (actionsRestantes > 0) {
+            partie.setNb_actions(actionsRestantes - 1);
+            return true;
+        }
+        return false;
     }
 
 }

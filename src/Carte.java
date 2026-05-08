@@ -12,9 +12,11 @@ public class Carte {
     private float limite_pollution;
     private boolean presVile;
     private Case[][] grille;
+    private Partie partie;
 
 
-    public Carte(String tailleCarte, float foret, float limite_foret, float limite_pollution, float limite_temp, float limite_vie_sauvage, float pollution, boolean presVile, float temp, float vie_sauvage) {
+    public Carte(String tailleCarte, float foret, float limite_foret, float limite_pollution, float limite_temp, float limite_vie_sauvage, float pollution, boolean presVile, float temp, float vie_sauvage, Partie partie) {
+        this.partie = partie;
         this.foret = foret;
         this.limite_foret = limite_foret;
         this.limite_pollution = limite_pollution;
@@ -217,6 +219,10 @@ public class Carte {
 
     public void setGrille(Case[][] grille) {
         this.grille = grille;
+    }
+
+    public Partie getPartie() {
+        return partie;
     }
 
     @Override
