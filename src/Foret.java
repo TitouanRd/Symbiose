@@ -48,8 +48,11 @@ public class Foret extends TypeTerrain {
         return sb.toString();
     }
 
-    @Override
-    public void fin_tour(){
+     @Override
+    public Number[] fin_tour() {
+        Number[] retour = new Number[1];
+        retour[0] = 0f;
+        return retour;
     }
 
     @Override
