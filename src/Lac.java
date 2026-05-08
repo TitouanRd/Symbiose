@@ -41,9 +41,11 @@ public class Lac extends TypeTerrain {
     public void remplir() {
         Plaine plaine = new Plaine(this.getVitesseVent(),50f,15f,50f,this.getParent());
         this.getParent().setTypeTerrain(plaine);
+        this.getParent().getCarte().getPartie().notifyMapChanged();// rafraichie la grille
     }
     public void exploiter() {
         System.err.println("Lac exploiter");
+        this.getParent().getCarte().getPartie().notifyMapChanged();// rafraichie la grille
     }
 
     @Override
@@ -62,7 +64,20 @@ public class Lac extends TypeTerrain {
         retour[0] = 0f;
         return retour;
     }
+    @Override
+    // gère le nombre d'actions restantes pour les actions sur le lac
+    public boolean  nb_tour() {
+        Partie partie = parent.getCarte().getPartie();
+        int actionsRestantes = partie.getNb_actions();
+        System.out.println("Actions restantes avant action: " + actionsRestantes);
+        if (actionsRestantes > 0) {
+            partie.setNb_actions(actionsRestantes - 1);
+            return true;
+        }
+        return false;
+    }
 
+// Affiche les informations du lac et les actions possibles
     public void show() {
         JFrame frame = new JFrame("Lac");
 
@@ -95,14 +110,18 @@ public class Lac extends TypeTerrain {
         JPanel buttonPanel = new JPanel();
         JButton exploiter = new JButton("Exploiter");
         exploiter.addActionListener(e -> {
-            exploiter();
+            if (nb_tour()) {// vérifie si le joueur a des actions restantes pour exploiter le lac
+                exploiter();
+            }
             frame.dispose();
         });
         buttonPanel.add(exploiter);
 
         JButton remplire = new JButton("Remplir");
         remplire.addActionListener(e -> {
-            remplir();
+            if (nb_tour()) {
+                remplir();
+            }
             frame.dispose();
         });
         buttonPanel.add(remplire);
