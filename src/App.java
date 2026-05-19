@@ -1,15 +1,13 @@
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
 
 public class App {
     public static void main(String[] args) throws Exception {
-        // Lancer la grille hexagonale avec la carte
+
+
+        // Lancer choix taille grille
         JFrame frame = new JFrame("Hex Grid");
 
         JPanel panel = new JPanel();
@@ -69,10 +67,6 @@ public class App {
         panel.add(panel1, BorderLayout.NORTH);
         panel.add(panel4, BorderLayout.CENTER);
         frame.add(panel);
-
-
-//ici je veut que je clique sur une des tailles de carte et que ça lance la grille hexagonale avec la carte correspondante, mais je n'arrive pas à faire le lien entre les boutons et la création de la carte, est ce que tu peux m'aider ?
-
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -81,10 +75,60 @@ public class App {
 
     private static void lancerGrille(String taille) {
         try {
-            Partie partie = new Partie(null, false, 0, 0, 0, 0, 0, taille);
+            Partie partie = new Partie(null, false, 0, 3, 0, 0, 0, taille);
             JFrame grilleFrame = new JFrame("Hex Grid - " + taille);
             grilleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            grilleFrame.add(new HexGridApp(partie.getCarte()));
+
+
+            // Créer un panel principal avec BorderLayout
+            JPanel mainPanel = new JPanel(new BorderLayout());
+
+            // Panel du haut pour afficher du texte et bouton
+            JPanel topPanel = new JPanel(new BorderLayout());
+
+            final JTextArea infoArea = new JTextArea(1, 60);
+            infoArea.setEditable(false);
+
+            //ici va cherhcer les info de la partie en dehors de la fonction pour les afficher "en temps réel"
+
+            Runnable updateInfo = () -> infoArea.setText(formatInfo(partie));
+            partie.setUpdateListener(updateInfo);
+            updateInfo.run();
+
+
+            topPanel.add(new JScrollPane(infoArea), BorderLayout.CENTER);
+
+            final HexGridApp gridApp = new HexGridApp(partie.getCarte());
+
+            // Listener pour rafraîchir la grille quand la carte change
+            Runnable mapChangeListener = () -> gridApp.refresh();
+            partie.setMapChangeListener(mapChangeListener);
+
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            JButton fin_tour = new JButton("Fin de tour");
+              fin_tour.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //ici lance actions de fin de tour
+                partie.fin_Tour();
+
+
+                gridApp.refresh();//rafraichie la grille pour afficher les changements de la carte et des info de la partie
+        
+            }
+        });
+
+
+
+            buttonPanel.add(fin_tour);
+            topPanel.add(buttonPanel, BorderLayout.EAST);
+
+            mainPanel.add(topPanel, BorderLayout.NORTH);
+
+            // Panel du milieu pour la grille
+            mainPanel.add(gridApp, BorderLayout.CENTER);
+            
+            grilleFrame.add(mainPanel); 
             grilleFrame.pack();
             grilleFrame.setLocationRelativeTo(null);
             grilleFrame.setVisible(true);
@@ -92,4 +136,14 @@ public class App {
             ex.printStackTrace();
         }
     }
+
+    // Format les informations de la partie pour les afficher dans le JTextArea
+    private static String formatInfo(Partie partie) {
+        return "- Ressources: " + partie.getRessources() +
+               "    - Production d'énergie: " + partie.getProduction_energie() +
+               "    - Nombre de tours: " + partie.getNb_tour() +
+               "    - Limite de tours: " + partie.getLimite_tour() +
+               "    - Nombre d'actions: " + partie.getNb_actions();
+    }
 }
+

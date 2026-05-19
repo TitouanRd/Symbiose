@@ -12,9 +12,11 @@ public class Carte {
     private float limite_pollution;
     private boolean presVile;
     private Case[][] grille;
+    private Partie partie;
 
 
-    public Carte(String tailleCarte, float foret, float limite_foret, float limite_pollution, float limite_temp, float limite_vie_sauvage, float pollution, boolean presVile, float temp, float vie_sauvage) {
+    public Carte(String tailleCarte, float foret, float limite_foret, float limite_pollution, float limite_temp, float limite_vie_sauvage, float pollution, boolean presVile, float temp, float vie_sauvage, Partie partie) {
+        this.partie = partie;
         this.foret = foret;
         this.limite_foret = limite_foret;
         this.limite_pollution = limite_pollution;
@@ -70,29 +72,32 @@ public class Carte {
                 // 2. Bonus de voisinage (Haut et Gauche)
                 // On regarde la case à gauche
                 if (x > 0) {
-                    if (grille[x-1][y] instanceof Foret) poidsForet += 80;
-                    if (grille[x-1][y] instanceof Lac) poidsLac += 80;
+                    if (grille[x-1][y].getTypeTerrain() instanceof Foret) poidsForet += 80;
+                    if (grille[x-1][y].getTypeTerrain() instanceof Lac) poidsLac += 80;
                 }
                 // On regarde la case en haut
                 if (y > 0) {
-                    if (grille[x][y-1] instanceof Foret) poidsForet += 80;
-                    if (grille[x][y-1] instanceof Lac) poidsLac += 80;
+                    if (grille[x][y-1].getTypeTerrain() instanceof Foret) poidsForet += 80;
+                    if (grille[x][y-1].getTypeTerrain() instanceof Lac) poidsLac += 80;
                 }
 
                 // 3. Tirage aléatoire pondéré
                 int totalPoids = poidsPlaine + poidsForet + poidsLac;
                 int tirage = random.nextInt(totalPoids);
-
+                grille[x][y] = new Case(0f,100f,"Saine",this,null);
+                TypeTerrain typeTerrain;
                 if (tirage < poidsPlaine) {
                     // Création d'une Plaine
-                    grille[x][y] = new Plaine(0f, 100f, "Saine", 10f, 50f, 15f, 80f);
+                    typeTerrain = new Plaine(10f, 50f, 15f, 80f,grille[x][y] );
                 } else if (tirage < poidsPlaine + poidsForet) {
                     // Création d'une Forêt
-                    grille[x][y] = new Foret(0f, 100f, "Saine", 70f);
+                    typeTerrain = new Foret(70f,grille[x][y]);
                 } else {
                     // Création d'un Lac
-                    grille[x][y] = new Lac(0f, 100f, "Saine", 15f, 10f);
+                    typeTerrain = new Lac( 15f, 10f,grille[x][y]);
                 }
+
+                grille[x][y].setTypeTerrain(typeTerrain);
 
                 // On assigne la météo
                 grille[x][y].setMeteo(meteoParDefaut);
@@ -100,7 +105,7 @@ public class Carte {
         }
     }   
 
-    private void detectionCasesVoisines() {
+    public  void detectionCasesVoisines() {
         for (int i = 0; i < this.grille.length; i++){
             for (int j = 0; j < this.grille[i].length; j++){
                 ArrayList<Case> listeTemporaire = new ArrayList<>();
@@ -191,25 +196,61 @@ public class Carte {
     public void setPresVile() {
         this.presVile = true;
     }
-    public void fin_Tour() {
+    public Number[] fin_Tour() {
         System.err.println("Carte fin_Tour");
-        this.show();
+        Number[] retoursTotal = new Number[3];
+        float pollutionMoyenne = 0;
+        float qualiteMoyenne = 0;
+        float tauxForetMoyen = 0;
+        float temperaturMoyenne = 0;
+
+        for (Case[] x : this.grille) {
+            for (Case c : x) {
+                Number[] retours = c.fin_Tour();
+                c.show();
+                retoursTotal[0] = (float)retoursTotal[0] + (float)retours[0]; // ressources
+                retoursTotal[1] = (float)retoursTotal[1] + (float)retours[1]; // prod energie
+                pollutionMoyenne += (float)retoursTotal[2];
+                qualiteMoyenne += (float)retoursTotal[3];
+                tauxForetMoyen +=  (float)retoursTotal[4];
+                temperaturMoyenne += (float)retoursTotal[5];
+
+            }
+        }
+        pollutionMoyenne /= (this.grille[0].length*this.grille[1].length);
+        qualiteMoyenne /= (this.grille[0].length*this.grille[1].length);
+        tauxForetMoyen /= (this.grille[0].length*this.grille[1].length);
+        temperaturMoyenne /= (this.grille[0].length*this.grille[1].length);
+
+        if (pollutionMoyenne > this.limite_pollution) {
+            retoursTotal[3] = 1;  //limite de pollution
+        } else if (qualiteMoyenne < this.limite_vie_sauvage) {
+            retoursTotal[3] = 1;  // limite de qualite de la carte
+        } else if (tauxForetMoyen < this.limite_foret) {
+            retoursTotal[3] = 1;  //limite des forets
+        } else if (temperaturMoyenne > this.limite_temp) {
+            retoursTotal[3] = 1;
+        }
+        return retoursTotal;
+    }
+
+    public void show(){
         for (Case[] x : this.grille) {
             for (Case c : x) {
                 c.show();
             }
         }
     }
-    public void show() {
-        System.err.println("Carte show");
-    }
-
     public Case[][] getGrille() {
         return grille;
     }
 
     public void setGrille(Case[][] grille) {
         this.grille = grille;
+    }
+
+    public Partie getPartie() {
+        return partie;
     }
 
     @Override

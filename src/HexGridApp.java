@@ -59,6 +59,8 @@ class HexagonTile {
         return p;
     }
 
+
+    //couleur d'un hexagone
     public Color getHighlightColor() {
         int offset = highlightTick * highlightOffset;
         int r = Math.min(255, baseColor.getRed() + offset);
@@ -67,8 +69,18 @@ class HexagonTile {
         return new Color(r, g, b);
     }
 
+
+    //change de sprite
+    public void setSprite(BufferedImage sprite) {
+        this.sprite = sprite;
+    }
+
     public void render(Graphics2D g2d) {
         Polygon poly = getPolygon();
+
+        g2d.setColor(getHighlightColor());
+        g2d.fillPolygon(poly);
+
         if (sprite != null) {
             Shape previousClip = g2d.getClip();
             g2d.setClip(poly);
@@ -76,7 +88,7 @@ class HexagonTile {
             g2d.drawImage(sprite, bounds.x, bounds.y, bounds.width, bounds.height, null);
             g2d.setClip(previousClip);
         }
-        g2d.setColor(new Color(0, 0, 0, 50)); // Bordure discrète
+        g2d.setColor(new Color(255, 255, 255, 100)); // Bordure discrète
         g2d.drawPolygon(poly);
     }
 
@@ -84,6 +96,16 @@ class HexagonTile {
         this.highlightTick = maxHighlightTicks;
     }
 }
+
+
+
+
+
+
+
+
+
+
 
 // --- 2. CLASSE HEXAGONE PLAT ---
 class FlatTopHexagonTile extends HexagonTile {
@@ -115,6 +137,8 @@ class FlatTopHexagonTile extends HexagonTile {
 }
 
 // --- 3. APPLICATION PRINCIPALE ---
+
+
 public class HexGridApp extends JPanel {
     private List<HexagonTile> hexagons;
     private Point mousePos = new Point(0, 0);
@@ -146,6 +170,8 @@ public class HexGridApp extends JPanel {
         }
         setPreferredSize(new Dimension((int) (maxX + 50), (int) (maxY + 50)));
 
+
+        // Regarde si ou utilise la souris
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -156,7 +182,7 @@ public class HexGridApp extends JPanel {
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
 
-            
+            // si la sourie est cliqué on regarde dans quelle hexagone elle est et on affiche les info de la case
             public void mouseClicked(MouseEvent e) {
                 Point clickPos = e.getPoint();
                 for (HexagonTile h : hexagons) {
@@ -178,19 +204,24 @@ public class HexGridApp extends JPanel {
         }).start();
     }
 
+
+    // charge le sprite en fonction du types de terrains
     private void loadSprites() {
          String[] types = {"Foret", "Lac", "Plaine"};
         for (String type : types) {
             try {
-                BufferedImage img = ImageIO.read(new File(type.toLowerCase() + ".png"));
+                BufferedImage img = ImageIO.read(new File("images\\"+ type.toLowerCase() + ".png"));
                 sprites.put(type, img);
+                sprites.put(type.toLowerCase(), img);
             } catch (IOException e) {
                 System.err.println("Impossible de charger " + type.toLowerCase() + ".png, utilisation d'une couleur de secours.");
                 sprites.put(type, null);
+                sprites.put(type.toLowerCase(), null);
             }
         }
     }
 
+    // initialise les hexagones en fonction de la taille de la carte et de l'écran
     private List<HexagonTile> initHexagons(int numX, int numY, boolean flatTop) {
         List<HexagonTile> list = new ArrayList<>();
         
@@ -235,8 +266,30 @@ public class HexGridApp extends JPanel {
         return list;
     }
 
+
+    //raffraichie la grille en fonction de la carte
+    public void refresh() {
+        if (carte == null || hexagons == null) return;
+        for (int i = 0; i < hexagons.size(); i++) {
+            int gridY = i / numX;
+            int gridX = i % numX;
+            Case caseType = carte.getGrille()[gridY][gridX];
+            BufferedImage sprite = null;
+            if (caseType != null && caseType.getTypeTerrain() != null) {
+                String type = caseType.getTypeTerrain().getClass().getSimpleName();
+                sprite = sprites.get(type);
+                if (sprite == null) {
+                    sprite = sprites.get(type.toLowerCase());
+                }
+            }
+            hexagons.get(i).setSprite(sprite);
+        }
+        repaint();
+    }
+
+    // Crée un hexagone en fonction de la position, du rayon, du type de terrain et de l'orientation
     private HexagonTile createHex(Point2D.Double pos, double r, boolean flat, Case caseType) {
-        String type = caseType.getClass().getSimpleName();
+        String type = caseType.getTypeTerrain().getClass().getSimpleName();
         BufferedImage sprite = sprites.get(type);
         if (sprite == null) {
             sprite = sprites.get(type.toLowerCase());
@@ -247,6 +300,7 @@ public class HexGridApp extends JPanel {
     }
 
     @Override
+    // Affiche les hexagones et gère le survol pour le highlight
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;

@@ -1,23 +1,42 @@
 import javax.swing.*;
 
-public class Foret extends Case {
+public class Foret extends TypeTerrain {
     private float recouvrementArbre;
+    private Case parent;
+
     public float getrecouvrementArbre() {
         return recouvrementArbre;
     }
     public void setRecouvrementArbre(float recouvrementArbre) {
         this.recouvrementArbre = recouvrementArbre;
     }
-    
-    public Foret(float pollution, float qualite, String sante_environnemental, float recouvrementArbre) {
-        super(pollution, qualite, sante_environnemental);
+
+    public float getRecouvrementArbre() {
+        return recouvrementArbre;
+    }
+
+    public Case getParent() {
+        return parent;
+    }
+
+    public void setParent(Case parent) {
+        this.parent = parent;
+    }
+
+    public Foret(float recouvrementArbre, Case parent) {
         this.recouvrementArbre = recouvrementArbre;
+        this.parent = parent;
+
     }
     public void raser() {
-        System.err.println("Foret rasze");
+        Plaine plaine = new Plaine(10,50f,30f,80f,this.getParent());
+        this.getParent().setTypeTerrain(plaine);
+        this.getParent().setQualite(this.getParent().getQualite()-20);
+        this.getParent().getCarte().getPartie().notifyMapChanged();// rafraichie la grille
     }
     public void exploiter() {
         System.err.println("Foret exploiter");
+        this.getParent().getCarte().getPartie().notifyMapChanged();// rafraichie la grille
     }
 
     @Override
@@ -29,7 +48,28 @@ public class Foret extends Case {
         return sb.toString();
     }
 
+     @Override
+    public Number[] fin_tour() {
+        Number[] retour = new Number[1];
+        retour[0] = 0f;
+        return retour;
+    }
+
     @Override
+    // Gère le nombre d'actions pour exploiter ou raser la forêt, retourne true si l'action peut être effectuée, false sinon
+    public boolean  nb_tour() {
+        Partie partie = parent.getCarte().getPartie();
+        int actionsRestantes = partie.getNb_actions();
+        System.out.println("Actions restantes avant action: " + actionsRestantes);
+        if (actionsRestantes > 0) {
+            partie.setNb_actions(actionsRestantes - 1);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    // Affiche les informations de la forêt et les actions possibles (exploiter ou raser)
     public void show() {
         JFrame frame = new JFrame("Foret");
 
@@ -41,12 +81,15 @@ public class Foret extends Case {
         infoLabel.setAlignmentX(panel.CENTER_ALIGNMENT);
         panel.add(infoLabel);
 
-        JTextArea infoArea = new JTextArea(5, 20);
+        JTextArea infoArea = new JTextArea(10, 20);
         infoArea.setEditable(false);
         infoArea.setText(
-            "- Pollution: " + getPollution() + "\n" +
-            "- Qualité: " + getQualite() + "\n" +
-            "- Santé environnementale: " + getSante_environnemental() + "\n" +
+
+            "- Pollution: " + parent.getPollution() + "\n" +
+            "- Qualité: " + parent.getQualite() + "\n" +
+            "- Santé environnementale: " + parent.getSante_environnemental() + "\n" +
+            "- Meteo: " + parent.getMeteo() + "\n" +
+            "- Construction: " + parent.getConstruction() + "\n" +
             "- Recouvrement d'arbres: " + recouvrementArbre
         );
         panel.add(new JScrollPane(infoArea));
@@ -59,14 +102,19 @@ public class Foret extends Case {
         JPanel buttonPanel = new JPanel();
         JButton exploiter = new JButton("Exploiter");
         exploiter.addActionListener(e -> {
-            exploiter();
+            // Vérifie si l'action peut être effectuée (nombre d'actions restantes), puis exploite la forêt
+            if (nb_tour()) {
+                exploiter();
+            }
             frame.dispose();
         });
         buttonPanel.add(exploiter);
 
         JButton raser = new JButton("Raser");
         raser.addActionListener(e -> {
-            raser();
+            if (nb_tour()) {
+                raser();
+            }
             frame.dispose();
         });
         buttonPanel.add(raser);

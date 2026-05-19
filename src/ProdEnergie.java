@@ -19,6 +19,6 @@ public abstract class ProdEnergie extends Construction {
     public void setRendement(float rendement){
         this.rendement = rendement;
     }
-    public abstract void consommerRessources( Case c,Partie p);
-    public abstract void produireEnergie( Case c,Partie p);
+    public abstract float consommerRessources( Case c);
+    public abstract float produireEnergie( Case c);
 }

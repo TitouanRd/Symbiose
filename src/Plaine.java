@@ -6,12 +6,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-public class Plaine extends Case {
+public class Plaine extends TypeTerrain {
     private float vitesseVent;
     private float enseileillement;
     private float temperatureSol;
-
     private float richesseSol;
+    private boolean protege = false;
+    private Case parent;
 
     public float getVitesseVent() {
         return vitesseVent;
@@ -39,25 +40,34 @@ public class Plaine extends Case {
     }
 
     
-    public Plaine(float pollution, float qualite, String sante_environnemental, float vitesseVent,
-            float enseileillement, float temperatureSol, float richesseSol) {
-        super(pollution, qualite, sante_environnemental);
+    public Plaine(float vitesseVent, float enseileillement, float temperatureSol, float richesseSol, Case parent) {
         this.vitesseVent = vitesseVent;
         this.enseileillement = enseileillement;
         this.temperatureSol = temperatureSol;
         this.richesseSol = richesseSol;
+        this.parent = parent;
     }
 
-    
+    public Case getParent() {
+        return parent;
+    }
+
+    public void setParent(Case parent) {
+        this.parent = parent;
+    }
 
     public void creuser(){
-        System.err.println("Plaine creuser");
+        Lac lac = new Lac(15f,this.getVitesseVent(),this.getParent());
+        this.getParent().setTypeTerrain(lac);
+        this.getParent().getCarte().getPartie().notifyMapChanged();// rafraichie la grille pour afficher le lac
     }
     public void planterForet(){
-        System.err.println("Plaine planterForet");
+        Foret foret = new Foret(50f,this.getParent());
+        this.getParent().setTypeTerrain(foret);
+        this.getParent().getCarte().getPartie().notifyMapChanged();// rafraichie la grille pour afficher la foret
     }
     public void proteger(){
-        System.err.println("Plaine proteger");
+        this.protege = true;
     }
 
     @Override
@@ -72,7 +82,14 @@ public class Plaine extends Case {
         return sb.toString();
     }
 
-     public void show() {
+    @Override
+    public Number[] fin_tour() {
+        Number[] retour = new Number[1];
+        retour[0] = 0f;
+        return retour;
+    }
+
+    public void show() {// affiche les info de la plaine et les actions possibles dans une nouvelle fenêtre
         JFrame frame = new JFrame("Plaine");
 
         JPanel panel = new JPanel();
@@ -83,12 +100,14 @@ public class Plaine extends Case {
         infoLabel.setAlignmentX(panel.CENTER_ALIGNMENT);
         panel.add(infoLabel);
 
-        JTextArea infoArea = new JTextArea(5, 20);
+        JTextArea infoArea = new JTextArea(10, 20);
         infoArea.setEditable(false);
         infoArea.setText(
-            "- Pollution: " + getPollution() + "\n" +
-            "- Qualité: " + getQualite() + "\n" +
-            "- Santé environnementale: " + getSante_environnemental() + "\n" +
+            "- Pollution: " + parent.getPollution() + "\n" +
+            "- Qualité: " + parent.getQualite() + "\n" +
+            "- Santé environnementale: " + parent.getSante_environnemental() + "\n" +
+            "- Meteo: " + parent.getMeteo() + "\n" +
+            "- Construction: " + parent.getConstruction() + "\n" +
             "- Ensoleillement: " + enseileillement + "\n" +
             "- Temperature du sol: " + temperatureSol + "\n" +
             "- Richesse du sol: " + richesseSol + "\n" +
@@ -104,31 +123,48 @@ public class Plaine extends Case {
         JPanel buttonPanel = new JPanel();
         JButton creuser = new JButton("Creuser");
         creuser.addActionListener(e -> {
-            creuser();
+            if (nb_tour()) {// vérifie si le joueur a des actions restantes pour ce tour
+                creuser();
+            }
             frame.dispose();
         });
         buttonPanel.add(creuser);
 
         JButton planterForet = new JButton("Planter une forêt");
         planterForet.addActionListener(e -> {
-            planterForet();
+            if (nb_tour()) {
+                planterForet();
+            }
             frame.dispose();
         });
         buttonPanel.add(planterForet);
 
         JButton proteger = new JButton("Proteger");
         proteger.addActionListener(e -> {
-            proteger();
+            if (nb_tour()) {
+                proteger();
+            }
             frame.dispose();
         });
         buttonPanel.add(proteger);
-
         panel.add(buttonPanel);
-
         frame.add(panel);
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+
+    @Override
+    // vérifie si le joueur a des actions restantes pour ce tour, si oui décrémente le nombre d'actions et retourne true, sinon retourne false
+    public boolean  nb_tour() {
+        Partie partie = parent.getCarte().getPartie();
+        int actionsRestantes = partie.getNb_actions();
+        System.out.println("Actions restantes avant action: " + actionsRestantes);
+        if (actionsRestantes > 0) {
+            partie.setNb_actions(actionsRestantes - 1);
+            return true;
+        }
+        return false;
     }
 
 }

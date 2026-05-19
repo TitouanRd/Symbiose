@@ -6,9 +6,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-public class Lac extends Case {
+public class Lac extends TypeTerrain {
     private float vitesseCourant;
     private float vitesseVent;
+    private Case parent;
+
     public float getVitesseCourant() {
         return vitesseCourant;
     }
@@ -21,17 +23,29 @@ public class Lac extends Case {
     public void setVitesseVent(float vitesseVent) {
         this.vitesseVent = vitesseVent;
     }
-    
-    public Lac(float pollution, float qualite, String sante_environnemental, float vitesseCourant, float vitesseVent) {
-        super(pollution, qualite, sante_environnemental);
+
+    public Case getParent() {
+        return parent;
+    }
+
+    public void setParent(Case parent) {
+        this.parent = parent;
+    }
+
+    public Lac(float vitesseCourant, float vitesseVent, Case parent) {
         this.vitesseCourant = vitesseCourant;
         this.vitesseVent = vitesseVent;
+        this.parent = parent;
+
     }
     public void remplir() {
-        System.err.println("Lac remplire");
+        Plaine plaine = new Plaine(this.getVitesseVent(),50f,15f,50f,this.getParent());
+        this.getParent().setTypeTerrain(plaine);
+        this.getParent().getCarte().getPartie().notifyMapChanged();// rafraichie la grille
     }
     public void exploiter() {
         System.err.println("Lac exploiter");
+        this.getParent().getCarte().getPartie().notifyMapChanged();// rafraichie la grille
     }
 
     @Override
@@ -44,6 +58,26 @@ public class Lac extends Case {
         return sb.toString();
     }
 
+    @Override
+    public Number[] fin_tour() {
+        Number[] retour = new Number[1];
+        retour[0] = 0f;
+        return retour;
+    }
+    @Override
+    // gère le nombre d'actions restantes pour les actions sur le lac
+    public boolean  nb_tour() {
+        Partie partie = parent.getCarte().getPartie();
+        int actionsRestantes = partie.getNb_actions();
+        System.out.println("Actions restantes avant action: " + actionsRestantes);
+        if (actionsRestantes > 0) {
+            partie.setNb_actions(actionsRestantes - 1);
+            return true;
+        }
+        return false;
+    }
+
+// Affiche les informations du lac et les actions possibles
     public void show() {
         JFrame frame = new JFrame("Lac");
 
@@ -55,14 +89,14 @@ public class Lac extends Case {
         infoLabel.setAlignmentX(panel.CENTER_ALIGNMENT);
         panel.add(infoLabel);
 
-        JTextArea infoArea = new JTextArea(5, 20);
+        JTextArea infoArea = new JTextArea(10, 20);
         infoArea.setEditable(false);
         infoArea.setText(
-            "- Pollution: " + getPollution() + "\n" +
-            "- Qualité: " + getQualite() + "\n" +
-            "- Santé environnementale: " + getSante_environnemental() + "\n" +
-            "- Meteo: " + getMeteo() + "\n" +
-            "- Construction: " + getConstruction() + "\n" +
+            "- Pollution: " + parent.getPollution() + "\n" +
+            "- Qualité: " + parent.getQualite() + "\n" +
+            "- Santé environnementale: " + parent.getSante_environnemental() + "\n" +
+            "- Meteo: " + parent.getMeteo() + "\n" +
+            "- Construction: " + parent.getConstruction() + "\n" +
             "- Vitesse du courant: " + vitesseCourant + "\n" +
             "- Vitesse du vent: " + vitesseVent
         );
@@ -76,14 +110,18 @@ public class Lac extends Case {
         JPanel buttonPanel = new JPanel();
         JButton exploiter = new JButton("Exploiter");
         exploiter.addActionListener(e -> {
-            exploiter();
+            if (nb_tour()) {// vérifie si le joueur a des actions restantes pour exploiter le lac
+                exploiter();
+            }
             frame.dispose();
         });
         buttonPanel.add(exploiter);
 
         JButton remplire = new JButton("Remplir");
         remplire.addActionListener(e -> {
-            remplir();
+            if (nb_tour()) {
+                remplir();
+            }
             frame.dispose();
         });
         buttonPanel.add(remplire);
