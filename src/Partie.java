@@ -1,15 +1,18 @@
+import javax.swing.SwingUtilities;
+
 public class Partie {
     private int ressources;
-    private int production_energie;
+    private float production_energie;
     private int nb_tour;
     private int limite_tour;
     private int nb_actions;
     private String difficulter;
     private boolean limite_depassee;
+    private Runnable updateListener;
+    private Runnable mapChangeListener;
     private final Carte carte;
 
-    public Partie(String difficulter, boolean limite_depassee, int limite_tour, int nb_actions, int nb_tour,
-            int production_energie, int ressources, String tailleCarte) {
+    public Partie(String difficulter, boolean limite_depassee, int limite_tour, int nb_actions, int nb_tour, float production_energie, int ressources, String tailleCarte) {
         this.difficulter = difficulter;
         this.limite_depassee = limite_depassee;
         this.limite_tour = limite_tour;
@@ -17,14 +20,13 @@ public class Partie {
         this.nb_tour = nb_tour;
         this.production_energie = production_energie;
         this.ressources = ressources;
-        this.carte = new Carte(tailleCarte, 0f, 0f, 0f, 0f, 0f, 0f, false, 0f, 0f);
-    }
-
+        this.carte = new Carte(tailleCarte, 0f, 0f, 0f, 0f, 0f, 0f, false, 0f, 0f, this);
+        }
     public int getRessources() {
         return ressources;
     }
 
-    public int getProduction_energie() {
+    public float getProduction_energie() {
         return production_energie;
     }
 
@@ -47,7 +49,6 @@ public class Partie {
     public boolean isLimite_depassee() {
         return limite_depassee;
     }
-
     public Carte getCarte() {
         return carte;
     }
@@ -56,24 +57,51 @@ public class Partie {
         this.ressources = ressources;
     }
 
-    public void setProduction_energie(int production_energie) {
+    public void setProduction_energie(float production_energie) {
         this.production_energie = production_energie;
+        notifyUpdateListener();
     }
 
     public void setNb_tour(int nb_tour) {
         this.nb_tour = nb_tour;
+        notifyUpdateListener();
     }
 
     public void setLimite_tour(int limite_tour) {
         this.limite_tour = limite_tour;
+        notifyUpdateListener();
     }
 
     public void setNb_actions(int nb_actions) {
         this.nb_actions = nb_actions;
+        notifyUpdateListener();
     }
 
     public void setDifficulter(String difficulter) {
         this.difficulter = difficulter;
+    }
+
+    // met à jour les info de la partie et rafraichie la grille
+    public void setUpdateListener(Runnable updateListener) {
+        this.updateListener = updateListener;
+    }
+
+    // met à jour la grille quand la carte change
+    public void setMapChangeListener(Runnable mapChangeListener) {
+        this.mapChangeListener = mapChangeListener;
+    }
+
+    // notifie les listeners de mise à jour pour rafraichir les info et la grille
+    private void notifyUpdateListener() {
+        if (updateListener != null) {
+            SwingUtilities.invokeLater(updateListener);
+        }
+    }
+    // notifie les listeners de changement de carte pour rafraichir la grille
+    public void notifyMapChanged() {
+        if (mapChangeListener != null) {
+            SwingUtilities.invokeLater(mapChangeListener);
+        }
     }
 
     public void setLimite_depassee(boolean limite_depassee) {
@@ -97,14 +125,9 @@ public class Partie {
             } else {
                 //nouveau tour
                 this.nb_actions = 3;
-                this.show();
-            }
-        }
-    }
-
-    public void show() {
+                notifyUpdateListener();// rafraichie les info de la partie
         System.out.println("partie show");
         this.carte.show();
     }
 
-}
+}}}
