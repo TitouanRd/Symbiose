@@ -75,7 +75,7 @@ public class App {
 
     private static void lancerGrille(String taille) {
         try {
-            Partie partie = new Partie(null, false, 0, 0, 0, 0, 0, taille);
+            Partie partie = new Partie(null, false, 0, 3, 0, 0, 0, taille);
             JFrame grilleFrame = new JFrame("Hex Grid - " + taille);
             grilleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
