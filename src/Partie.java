@@ -110,24 +110,30 @@ public class Partie {
 
     public void fin_Tour() {
         System.out.println("partie fin_Tour");
-        this.getCarte().fin_Tour();
-        this.nb_tour +=1;
-        if (this.nb_tour==this.limite_tour) {
-            System.out.println("Partie fini, nombre de tours dépassé");
-        } else {
-            Number[] retours = this.getCarte().fin_Tour();
-            this.ressources += (int)retours[0];
-            this.production_energie += (int)retours[1];
-            if (production_energie>10000) {
-                System.out.println("Partie fini, objecif de production atteint");
-            } else if ((int)retours[2] == 1) {
-                System.out.println("Partie fini, Une des limite à été dépassée");
-            } else {
-                //nouveau tour
-                this.nb_actions = 3;
-                notifyUpdateListener();// rafraichie les info de la partie
-        System.out.println("partie show");
-        this.carte.show();
-    }
+        this.nb_tour += 1;
 
-}}}
+        if (this.nb_tour == this.limite_tour) {
+            System.out.println("Partie fini, nombre de tours dépassé");
+            return; // On s'arrête ici
+        }
+
+        // ON N'APPELLE LA FONCTION QU'UNE SEULE FOIS ICI
+        Number[] retours = this.getCarte().fin_Tour();
+
+        // Conversion sécurisée avec .intValue()
+        this.ressources += retours[0].intValue();
+        this.production_energie += retours[1].intValue();
+
+        if (production_energie > 10000) {
+            System.out.println("Partie fini, objectif de production atteint");
+        } else if (retours[2].intValue() == 1) { // Index 2 correspond au flag de défaite
+            System.out.println("Partie fini, Une des limites a été dépassée");
+        } else {
+            // Nouveau tour valide
+            System.out.println("nouveau tour");
+            this.nb_actions = 3;
+            notifyUpdateListener(); // Rafraîchit les infos de la partie
+            System.out.println("partie show");
+        }
+    }
+}
