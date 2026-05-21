@@ -143,7 +143,7 @@ public class Case {
         return carte;
     }
 
-    public void construir(Construction construction) {
+    public void construire(Construction construction) {
         if (this.construction == null) {
             this.construction = construction;
         }
