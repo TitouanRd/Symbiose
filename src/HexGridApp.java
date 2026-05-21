@@ -150,7 +150,6 @@ class FlatTopHexagonTile extends HexagonTile {
 
 // --- 3. APPLICATION PRINCIPALE ---
 
-
 public class HexGridApp extends JPanel {
     private List<HexagonTile> hexagons;
     private Point mousePos = new Point(0, 0);
@@ -159,17 +158,22 @@ public class HexGridApp extends JPanel {
     private static final Random RANDOM = new Random();
     private int numX, numY;
 
+    // Tableau contenant le nom exact de tes classes de construction (en minuscules)
+    // pour charger les fichiers "images/exploitation.png" et "images/hydrolienne.png"
+    private static final String[] TOUTES_LES_CONSTRUCTIONS = {"exploitation","eolienne","centrale","panneausolaire","ville"};
+
     public HexGridApp(Partie partie) {
         this.carte = partie.getCarte();
         setBackground(Color.BLACK);
         sprites = new HashMap<>();
-        loadSprites();
+        loadSprites(); // Charge les terrains ET les constructions au démarrage
+
         // On génère la grille avec les dimensions réelles de la carte
         int numRows = carte.getGrille().length;
         int numCols = carte.getGrille()[0].length;
         hexagons = initHexagons(numCols, numRows, true);
-        this.numX = numCols; // hauteur
-        this.numY = numRows; // largeur
+        this.numX = numCols; // largeur
+        this.numY = numRows; // hauteur
 
         // Calculer la taille préférée basée sur la grille
         double maxX = 0, maxY = 0;
@@ -182,8 +186,7 @@ public class HexGridApp extends JPanel {
         }
         setPreferredSize(new Dimension((int) (maxX + 50), (int) (maxY + 50)));
 
-
-        // Regarde si ou utilise la souris
+        // Écouteur pour les mouvements de la souris
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -191,6 +194,7 @@ public class HexGridApp extends JPanel {
             }
         });
 
+        // Écouteur pour le clic sur un hexagone
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -201,62 +205,97 @@ public class HexGridApp extends JPanel {
                         int gridY = index / numX;
                         int gridX = index % numX;
 
-                        // 2. On passe l'objet 'partie' à la méthode show()
+                        // Ouvre ton menu de construction
                         carte.getGrille()[gridY][gridX].show(partie);
+
+                        // Rafraîchit immédiatement l'image de la case après fermeture du menu
+                        refresh();
                         break;
                     }
                 }
             }
         });
 
-        // Loop de 50 FPS
+        // Boucle de rafraîchissement (~50 FPS)
         new Timer(20, e -> {
             for (HexagonTile h : hexagons) h.update();
             repaint();
         }).start();
     }
 
-
-    // charge le sprite en fonction du types de terrains
+    // Charge tous les sprites nécessaires
     private void loadSprites() {
-         String[] types = {"Foret", "Lac", "Plaine"};
-        for (String type : types) {
-            try {
-                BufferedImage img = ImageIO.read(new File("images/"+ type.toLowerCase() + ".png"));
-                sprites.put(type, img);
-                sprites.put(type.toLowerCase(), img);
-            } catch (IOException e) {
-                System.err.println("Impossible de charger " + type.toLowerCase() + ".png, utilisation d'une couleur de secours.");
-                sprites.put(type, null);
-                sprites.put(type.toLowerCase(), null);
-            }
+        // 1. Chargement des terrains
+        String[] terrains = {"Foret", "Lac", "Plaine"};
+        for (String terrain : terrains) {
+            chargerImage(terrain);
+        }
+
+        // 2. Chargement automatique des constructions de ton tableau
+        for (String construction : TOUTES_LES_CONSTRUCTIONS) {
+            chargerImage(construction);
         }
     }
 
-    // initialise les hexagones en fonction de la taille de la carte et de l'écran
+    // Méthode utilitaire pour lire et stocker les fichiers images
+    private void chargerImage(String nom) {
+        try {
+            BufferedImage img = ImageIO.read(new File("images/" + nom.toLowerCase() + ".png"));
+            sprites.put(nom.toLowerCase(), img);
+            sprites.put(nom, img);
+        } catch (IOException e) {
+            System.err.println("Impossible de charger " + nom.toLowerCase() + ".png, utilisation d'une couleur de secours.");
+            sprites.put(nom.toLowerCase(), null);
+            sprites.put(nom, null);
+        }
+    }
+
+    // Sélectionne dynamiquement le bon sprite pour une case
+    private BufferedImage genererSpriteCase(Case caseType) {
+        if (caseType == null) return null;
+
+        // Condition : Si une construction est présente sur la case
+        if (caseType.getConstruction() != null) {
+            // Java trouve tout seul le nom de la classe (ex: "Exploitation" ou "Hydrolienne")
+            String typeConstruction = caseType.getConstruction().getClass().getSimpleName();
+            BufferedImage constructionImg = sprites.get(typeConstruction.toLowerCase());
+
+            if (constructionImg != null) {
+                return constructionImg; // On renvoie l'image du bâtiment en priorité
+            }
+        }
+
+        // Sinon, on renvoie le terrain de base
+        if (caseType.getTypeTerrain() != null) {
+            String typeTerrain = caseType.getTypeTerrain().getClass().getSimpleName();
+            return sprites.get(typeTerrain.toLowerCase());
+        }
+
+        return null;
+    }
+
+    // Initialise les hexagones en fonction de la taille de la carte et de l'écran
     private List<HexagonTile> initHexagons(int numX, int numY, boolean flatTop) {
         List<HexagonTile> list = new ArrayList<>();
-        
-        // Calculer le rayon en fonction de la taille de l'écran
+
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        double screenWidth = screenSize.getWidth() - 100; // marge
-        double screenHeight = screenSize.getHeight() - 100; // marge
+        double screenWidth = screenSize.getWidth() - 100;
+        double screenHeight = screenSize.getHeight() - 100;
         double radius = Math.min(screenWidth / (numX * 1.5 + 1), screenHeight / (numY * Math.sqrt(3) + 1));
-        radius = Math.max(radius, 10); // minimum 10
-        
-        // On commence un peu en dehors de l'écran (comme ton -50, -50)
+        radius = Math.max(radius, 10);
+
         HexagonTile leftmost = createHex(new Point2D.Double(50, 50), radius, flatTop, carte.getGrille()[0][0]);
-        
+
         for (int y = 0; y < numY; y++) {
             if (y > 0) {
                 Polygon poly = leftmost.getPolygon();
                 int index = (y % 2 == 1 || flatTop) ? 2 : 4;
                 leftmost = createHex(new Point2D.Double(poly.xpoints[index], poly.ypoints[index]), radius, flatTop, carte.getGrille()[y][0]);
             }
-            
+
             HexagonTile current = leftmost;
             list.add(current);
-            
+
             for (int x = 1; x < numX; x++) {
                 double px = current.position.x;
                 double py = current.position.y;
@@ -278,52 +317,41 @@ public class HexGridApp extends JPanel {
         return list;
     }
 
-
-    //raffraichie la grille en fonction de la carte
+    // Met à jour les sprites de tous les hexagones (appelé après une construction²)
     public void refresh() {
         if (carte == null || hexagons == null) return;
         for (int i = 0; i < hexagons.size(); i++) {
             int gridY = i / numX;
             int gridX = i % numX;
             Case caseType = carte.getGrille()[gridY][gridX];
-            BufferedImage sprite = null;
-            if (caseType != null && caseType.getTypeTerrain() != null) {
-                String type = caseType.getTypeTerrain().getClass().getSimpleName();
-                sprite = sprites.get(type);
-                if (sprite == null) {
-                    sprite = sprites.get(type.toLowerCase());
-                }
-            }
-            hexagons.get(i).setSprite(sprite);
+
+            // Applique le sprite calculé (Bâtiment ou Terrain)
+            hexagons.get(i).setSprite(genererSpriteCase(caseType));
         }
         repaint();
     }
 
-    // Crée un hexagone en fonction de la position, du rayon, du type de terrain et de l'orientation
+    // Crée un objet hexagone physique pour l'affichage
     private HexagonTile createHex(Point2D.Double pos, double r, boolean flat, Case caseType) {
-        String type = caseType.getTypeTerrain().getClass().getSimpleName();
-        BufferedImage sprite = sprites.get(type);
-        if (sprite == null) {
-            sprite = sprites.get(type.toLowerCase());
-        }
+        BufferedImage sprite = genererSpriteCase(caseType);
         Color c = new Color(0, 0, 0, 0);
-        
+
         return flat ? new FlatTopHexagonTile(r, pos, c, sprite) : new HexagonTile(r, pos, c, sprite);
     }
 
     @Override
-    // Affiche les hexagones et gère le survol pour le highlight
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+        // Dessine toutes les tuiles
         for (HexagonTile h : hexagons) {
             h.render(g2d);
-            // Si la souris est proche du centre (collision)
+
+            // Gère les effets de survol de la souris (Highlight)
             if (h.getCentre().distance(mousePos) < h.getMinimalRadius()) {
                 h.triggerHighlight();
-                // Highlight aussi les voisins proches
                 for(HexagonTile n : hexagons) {
                     if (h.getCentre().distance(n.getCentre()) < h.getMinimalRadius() * 2.1) {
                         n.triggerHighlight();

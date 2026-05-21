@@ -129,6 +129,8 @@ public class Lac extends TypeTerrain {
                     exploiter();
                 }
                 frame.dispose();
+
+
             });
             buttonPanel.add(exploiter);
 
@@ -161,6 +163,7 @@ public class Lac extends TypeTerrain {
                             Exploitation exploitation = new Exploitation(0,"exploitation",0,0,0,0,0,0,0,0);
                             getParent().construire(exploitation);
                             frame1.dispose();
+
                         }
                     });
 
