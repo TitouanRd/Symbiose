@@ -142,4 +142,16 @@ public class Case {
     public Carte getCarte() {
         return carte;
     }
+
+    public void construir(Construction construction) {
+        if (this.construction == null) {
+            this.construction = construction;
+        }
+    }
+
+    public void detruire() {
+        if (this.construction != null) {
+            this.construction = null;
+        }
+    }
 }

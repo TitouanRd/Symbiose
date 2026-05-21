@@ -117,7 +117,6 @@ public class Partie {
             return; // On s'arrête ici
         }
 
-        // ON N'APPELLE LA FONCTION QU'UNE SEULE FOIS ICI
         Number[] retours = this.getCarte().fin_Tour();
 
         // Conversion sécurisée avec .intValue()
