@@ -5,6 +5,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import java.awt.*;
 
 public class Lac extends TypeTerrain {
     private float vitesseCourant;
@@ -78,7 +79,7 @@ public class Lac extends TypeTerrain {
     }
 
 // Affiche les informations du lac et les actions possibles
-    public void show() {
+    public void show(Partie partie) {
         JFrame frame = new JFrame("Lac");
 
         JPanel panel = new JPanel();
@@ -108,24 +109,34 @@ public class Lac extends TypeTerrain {
         panel.add(actionLabel);
 
         JPanel buttonPanel = new JPanel();
-        JButton exploiter = new JButton("Exploiter");
-        exploiter.addActionListener(e -> {
-            if (nb_tour()) {// vérifie si le joueur a des actions restantes pour exploiter le lac
-                exploiter();
-            }
-            frame.dispose();
-        });
-        buttonPanel.add(exploiter);
+        // --- LOGIQUE DE VÉRIFICATION DU TUTORIEL ---
+        boolean modeTuto = (Ville.getNbVille() == 0);
 
-        JButton remplire = new JButton("Remplir");
-        remplire.addActionListener(e -> {
-            if (nb_tour()) {
-                remplir();
-            }
-            frame.dispose();
-        });
-        buttonPanel.add(remplire);
+        if (modeTuto) {
+            // En mode tuto, on remplace les boutons par un message explicatif explicite
+            JLabel labelAvertissement = new JLabel("⚠️ Action impossible. Construisez d'abord votre Ville sur une Plaine !");
+            labelAvertissement.setForeground(Color.RED);
+            buttonPanel.add(labelAvertissement);
+        } else {
+            // Le jeu standard reprend si la ville est construite
+            JButton exploiter = new JButton("Exploiter");
+            exploiter.addActionListener(e -> {
+                if (nb_tour()) { // vérifie si le joueur a des actions restantes pour exploiter le lac
+                    exploiter();
+                }
+                frame.dispose();
+            });
+            buttonPanel.add(exploiter);
 
+            JButton remplire = new JButton("Remplir");
+            remplire.addActionListener(e -> {
+                if (nb_tour()) {
+                    remplir();
+                }
+                frame.dispose();
+            });
+            buttonPanel.add(remplire);
+        }
         panel.add(buttonPanel);
 
         frame.add(panel);

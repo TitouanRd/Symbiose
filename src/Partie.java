@@ -92,7 +92,7 @@ public class Partie {
     }
 
     // notifie les listeners de mise à jour pour rafraichir les info et la grille
-    private void notifyUpdateListener() {
+    public void notifyUpdateListener() {
         if (updateListener != null) {
             SwingUtilities.invokeLater(updateListener);
         }

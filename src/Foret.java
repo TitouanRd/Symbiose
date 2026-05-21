@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 
 public class Foret extends TypeTerrain {
     private float recouvrementArbre;
@@ -70,7 +71,7 @@ public class Foret extends TypeTerrain {
 
     @Override
     // Affiche les informations de la forêt et les actions possibles (exploiter ou raser)
-    public void show() {
+    public void show(Partie partie) {
         JFrame frame = new JFrame("Foret");
 
         JPanel panel = new JPanel();
@@ -100,24 +101,34 @@ public class Foret extends TypeTerrain {
         panel.add(actionLabel);
 
         JPanel buttonPanel = new JPanel();
-        JButton exploiter = new JButton("Exploiter");
-        exploiter.addActionListener(e -> {
-            // Vérifie si l'action peut être effectuée (nombre d'actions restantes), puis exploite la forêt
-            if (nb_tour()) {
-                exploiter();
-            }
-            frame.dispose();
-        });
-        buttonPanel.add(exploiter);
 
-        JButton raser = new JButton("Raser");
-        raser.addActionListener(e -> {
-            if (nb_tour()) {
-                raser();
-            }
-            frame.dispose();
-        });
-        buttonPanel.add(raser);
+        boolean modeTuto = (Ville.getNbVille() == 0);
+
+        if (modeTuto) {
+            // En mode tuto, on remplace les boutons par un message explicatif explicite
+            JLabel labelAvertissement = new JLabel("⚠️ Action impossible. Construisez d'abord votre Ville sur une Plaine !");
+            labelAvertissement.setForeground(Color.RED);
+            buttonPanel.add(labelAvertissement);
+        } else {
+            JButton exploiter = new JButton("Exploiter");
+            exploiter.addActionListener(e -> {
+                // Vérifie si l'action peut être effectuée (nombre d'actions restantes), puis exploite la forêt
+                if (nb_tour()) {
+                    exploiter();
+                }
+                frame.dispose();
+            });
+            buttonPanel.add(exploiter);
+
+            JButton raser = new JButton("Raser");
+            raser.addActionListener(e -> {
+                if (nb_tour()) {
+                    raser();
+                }
+                frame.dispose();
+            });
+            buttonPanel.add(raser);
+        }
 
         panel.add(buttonPanel);
 

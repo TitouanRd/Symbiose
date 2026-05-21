@@ -78,9 +78,11 @@ class HexagonTile {
     public void render(Graphics2D g2d) {
         Polygon poly = getPolygon();
 
-        g2d.setColor(getHighlightColor());
+        // 1. On dessine la couleur de base (sécurité si pas d'image)
+        g2d.setColor(baseColor);
         g2d.fillPolygon(poly);
 
+        // 2. On dessine l'image (texture du terrain)
         if (sprite != null) {
             Shape previousClip = g2d.getClip();
             g2d.setClip(poly);
@@ -88,7 +90,17 @@ class HexagonTile {
             g2d.drawImage(sprite, bounds.x, bounds.y, bounds.width, bounds.height, null);
             g2d.setClip(previousClip);
         }
-        g2d.setColor(new Color(255, 255, 255, 100)); // Bordure discrète
+
+        // 3. NOUVEAU : On applique l'effet de survol (Highlight) PAR-DESSUS l'image
+        if (highlightTick > 0) {
+            // Un voile blanc dont l'opacité dépend du highlightTick
+            int alpha = Math.min(255, highlightTick * 10);
+            g2d.setColor(new Color(255, 255, 255, alpha));
+            g2d.fillPolygon(poly);
+        }
+
+        // 4. Bordure
+        g2d.setColor(new Color(255, 255, 255, 100)); // Blanc translucide
         g2d.drawPolygon(poly);
     }
 
@@ -147,8 +159,8 @@ public class HexGridApp extends JPanel {
     private static final Random RANDOM = new Random();
     private int numX, numY;
 
-    public HexGridApp(Carte carte) {
-        this.carte = carte;
+    public HexGridApp(Partie partie) {
+        this.carte = partie.getCarte();
         setBackground(Color.BLACK);
         sprites = new HashMap<>();
         loadSprites();
@@ -181,8 +193,6 @@ public class HexGridApp extends JPanel {
 
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
-
-            // si la sourie est cliqué on regarde dans quelle hexagone elle est et on affiche les info de la case
             public void mouseClicked(MouseEvent e) {
                 Point clickPos = e.getPoint();
                 for (HexagonTile h : hexagons) {
@@ -190,7 +200,9 @@ public class HexGridApp extends JPanel {
                         int index = hexagons.indexOf(h);
                         int gridY = index / numX;
                         int gridX = index % numX;
-                        carte.getGrille()[gridY][gridX].show();
+
+                        // 2. On passe l'objet 'partie' à la méthode show()
+                        carte.getGrille()[gridY][gridX].show(partie);
                         break;
                     }
                 }
@@ -210,7 +222,7 @@ public class HexGridApp extends JPanel {
          String[] types = {"Foret", "Lac", "Plaine"};
         for (String type : types) {
             try {
-                BufferedImage img = ImageIO.read(new File("images\\"+ type.toLowerCase() + ".png"));
+                BufferedImage img = ImageIO.read(new File("images/"+ type.toLowerCase() + ".png"));
                 sprites.put(type, img);
                 sprites.put(type.toLowerCase(), img);
             } catch (IOException e) {

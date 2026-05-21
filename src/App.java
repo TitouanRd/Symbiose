@@ -75,63 +75,68 @@ public class App {
 
     private static void lancerGrille(String taille) {
         try {
-            Partie partie = new Partie(null, false, 0, 3, 0, 0, 0, taille);
+            Partie partie = new Partie(null, false, 20, 1, 0, 10, 100, taille); // Ex: 100 ressources pour commencer
+            Ville.resetNbVille();
             JFrame grilleFrame = new JFrame("Hex Grid - " + taille);
             grilleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-
-            // Créer un panel principal avec BorderLayout
             JPanel mainPanel = new JPanel(new BorderLayout());
-
-            // Panel du haut pour afficher du texte et bouton
             JPanel topPanel = new JPanel(new BorderLayout());
 
-            final JTextArea infoArea = new JTextArea(1, 60);
+            final JTextArea infoArea = new JTextArea(2, 60); // Passé à 2 lignes pour afficher les instructions
             infoArea.setEditable(false);
 
-            //ici va cherhcer les info de la partie en dehors de la fonction pour les afficher "en temps réel"
+            final HexGridApp gridApp = new HexGridApp(partie);
+            JButton fin_tour = new JButton("Fin de tour");
 
-            Runnable updateInfo = () -> infoArea.setText(formatInfo(partie));
+            // Définition de la routine de mise à jour des informations
+            Runnable updateInfo = () -> {
+                infoArea.setText(formatInfo(partie));
+
+                // --- LOGIQUE TOUR 0 : BLOCAGE DU BOUTON FIN DE TOUR ---
+                if (partie.getNb_tour() == 0) {
+                    int nbVilles = Ville.getNbVille(); // Utilise le compteur statique de ta classe Ville
+                    if (nbVilles == 0) {
+                        infoArea.append("\n⚠️ OBJECTIF OBLIGATOIRE : Vous devez poser votre première Ville sur une Plaine pour commencer !");
+                        fin_tour.setEnabled(false); // Désactive le bouton tant qu'aucune ville n'est construite
+                    } else {
+                        infoArea.append("\n✅ Objectif atteint ! Vous pouvez maintenant terminer votre tour.");
+                        fin_tour.setEnabled(true);
+                    }
+                } else {
+                    fin_tour.setEnabled(true); // Toujours actif pour les tours suivants
+                }
+            };
+
             partie.setUpdateListener(updateInfo);
             updateInfo.run();
 
-
             topPanel.add(new JScrollPane(infoArea), BorderLayout.CENTER);
-
-            final HexGridApp gridApp = new HexGridApp(partie.getCarte());
 
             // Listener pour rafraîchir la grille quand la carte change
             Runnable mapChangeListener = () -> gridApp.refresh();
             partie.setMapChangeListener(mapChangeListener);
 
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-            JButton fin_tour = new JButton("Fin de tour");
-              fin_tour.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //ici lance actions de fin de tour
-                partie.fin_Tour();
-
-
-                gridApp.refresh();//rafraichie la grille pour afficher les changements de la carte et des info de la partie
-        
-            }
-        });
-
-
+            fin_tour.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    partie.fin_Tour();
+                    gridApp.refresh();
+                }
+            });
 
             buttonPanel.add(fin_tour);
             topPanel.add(buttonPanel, BorderLayout.EAST);
 
             mainPanel.add(topPanel, BorderLayout.NORTH);
-
-            // Panel du milieu pour la grille
             mainPanel.add(gridApp, BorderLayout.CENTER);
-            
-            grilleFrame.add(mainPanel); 
+
+            grilleFrame.add(mainPanel);
             grilleFrame.pack();
             grilleFrame.setLocationRelativeTo(null);
             grilleFrame.setVisible(true);
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }

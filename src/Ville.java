@@ -10,6 +10,10 @@ public class Ville extends Construction {
         nbVille++;
     }
 
+    public static void resetNbVille() {
+        nbVille = 0;
+    }
+
     // SOLUTION ERREUR 1 : Implémenter la méthode manquante de Construction
     @Override
     public Number[] BilanTour(Case c) {
@@ -43,5 +47,10 @@ public class Ville extends Construction {
 
     public static int getNbVille() {
         return nbVille;
+    }
+
+    @Override
+    public String toString() {
+        return "ville";
     }
 }

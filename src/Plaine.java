@@ -1,10 +1,4 @@
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 
 public class Plaine extends TypeTerrain {
     private float vitesseVent;
@@ -89,7 +83,7 @@ public class Plaine extends TypeTerrain {
         return retour;
     }
 
-    public void show() {// affiche les info de la plaine et les actions possibles dans une nouvelle fenêtre
+    public void show(Partie partie) { // affiche les info de la plaine et les actions possibles dans une nouvelle fenêtre
         JFrame frame = new JFrame("Plaine");
 
         JPanel panel = new JPanel();
@@ -103,15 +97,15 @@ public class Plaine extends TypeTerrain {
         JTextArea infoArea = new JTextArea(10, 20);
         infoArea.setEditable(false);
         infoArea.setText(
-            "- Pollution: " + parent.getPollution() + "\n" +
-            "- Qualité: " + parent.getQualite() + "\n" +
-            "- Santé environnementale: " + parent.getSante_environnemental() + "\n" +
-            "- Meteo: " + parent.getMeteo() + "\n" +
-            "- Construction: " + parent.getConstruction() + "\n" +
-            "- Ensoleillement: " + enseileillement + "\n" +
-            "- Temperature du sol: " + temperatureSol + "\n" +
-            "- Richesse du sol: " + richesseSol + "\n" +
-            "- Vitesse du vent: " + vitesseVent
+                "- Pollution: " + parent.getPollution() + "\n" +
+                        "- Qualité: " + parent.getQualite() + "\n" +
+                        "- Santé environnementale: " + parent.getSante_environnemental() + "\n" +
+                        "- Meteo: " + parent.getMeteo() + "\n" +
+                        "- Construction: " + parent.getConstruction() + "\n" +
+                        "- Ensoleillement: " + enseileillement + "\n" +
+                        "- Temperature du sol: " + temperatureSol + "\n" +
+                        "- Richesse du sol: " + richesseSol + "\n" +
+                        "- Vitesse du vent: " + vitesseVent
         );
         panel.add(new JScrollPane(infoArea));
 
@@ -121,32 +115,50 @@ public class Plaine extends TypeTerrain {
         panel.add(actionLabel);
 
         JPanel buttonPanel = new JPanel();
-        JButton creuser = new JButton("Creuser");
-        creuser.addActionListener(e -> {
-            if (nb_tour()) {// vérifie si le joueur a des actions restantes pour ce tour
-                creuser();
-            }
-            frame.dispose();
-        });
-        buttonPanel.add(creuser);
 
-        JButton planterForet = new JButton("Planter une forêt");
-        planterForet.addActionListener(e -> {
-            if (nb_tour()) {
-                planterForet();
-            }
-            frame.dispose();
-        });
-        buttonPanel.add(planterForet);
+        // --- LOGIQUE DE VÉRIFICATION DU TUTORIEL (DEPART) ---
+        // Si le compteur statique de Ville est à 0, le joueur n'a pas encore posé sa base
+        boolean modeTuto = (Ville.getNbVille() == 0);
 
-        JButton proteger = new JButton("Proteger");
-        proteger.addActionListener(e -> {
-            if (nb_tour()) {
-                proteger();
+        JButton construireVille = new JButton("Construire une Ville");
+        construireVille.addActionListener(e -> {
+            // On vérifie s'il reste des actions disponibles au joueur
+            if (partie.getNb_actions() > 0) {
+                // 1. Modification du modèle
+                parent.setConstruction(new Ville("Ville", 1, 0, 0, 0, 0, 0, 0f, 0f));
+                parent.setOccupation(true);
+
+                // 2. Consommation de la ressource d'action
+                partie.setNb_actions(partie.getNb_actions() - 1);
+
+                // 3. Notification pour mettre à jour le texte du haut (Bandeau de l'App)
+                partie.notifyUpdateListener();
+
+                frame.dispose();
+            } else {
+                JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
             }
-            frame.dispose();
         });
-        buttonPanel.add(proteger);
+
+        // Filtrage des boutons
+        if (modeTuto) {
+            buttonPanel.add(construireVille);
+        } else {
+            // Boutons standards (pense à leur passer aussi la vérification via 'partie' si nécessaire)
+            JButton creuser = new JButton("Creuser");
+            creuser.addActionListener(ev -> { if(nb_tour()) creuser(); frame.dispose(); });
+
+            JButton planterForet = new JButton("Planter une forêt");
+            planterForet.addActionListener(ev -> { if(nb_tour()) planterForet(); frame.dispose(); });
+
+            JButton proteger = new JButton("Proteger");
+            proteger.addActionListener(ev -> { if(nb_tour()) proteger(); frame.dispose(); });
+
+            buttonPanel.add(creuser);
+            buttonPanel.add(planterForet);
+            buttonPanel.add(proteger);
+        }
+
         panel.add(buttonPanel);
         frame.add(panel);
         frame.pack();

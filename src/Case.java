@@ -71,8 +71,8 @@ public class Case {
         return retoursCase;
     }
 
-    public void show() {
-        this.typeTerrain.show();
+    public void show(Partie partie) {
+        this.typeTerrain.show(partie);
     }
 
     public void afficherInformations(){

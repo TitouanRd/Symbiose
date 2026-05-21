@@ -245,10 +245,10 @@ public class Carte {
         return retoursTotal;
     }
 
-    public void show(){
+    public void show(Partie partie){
         for (Case[] x : this.grille) {
             for (Case c : x) {
-                c.show();
+                c.show(partie);
             }
         }
     }
