@@ -47,4 +47,9 @@ public class Centrale extends ProdEnergie{
         return retours;
     }
 
+    @Override
+    public String toString() {
+        return "central de niveau "+this.getNiveau();
+    }
+
 }

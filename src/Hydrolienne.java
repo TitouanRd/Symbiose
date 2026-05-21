@@ -41,4 +41,9 @@ public class Hydrolienne extends ProdEnergie{
         return retours;
     }
 
+    @Override
+    public String toString() {
+        return "Hydrolienne de niveau "+this.getNiveau();
+    }
+
 }

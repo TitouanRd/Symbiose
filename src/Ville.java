@@ -51,6 +51,6 @@ public class Ville extends Construction {
 
     @Override
     public String toString() {
-        return "ville";
+        return "ville de niveau "+this.getNiveau();
     }
 }

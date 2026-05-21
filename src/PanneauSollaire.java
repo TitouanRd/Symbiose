@@ -39,4 +39,9 @@ public class PanneauSollaire extends ProdEnergie{
         retours[1] =  produireEnergie(c);
         return retours;
     }
+
+    @Override
+    public String toString() {
+        return "Panneau Sollaire de niveau "+this.getNiveau();
+    }
 }

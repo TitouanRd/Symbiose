@@ -51,4 +51,9 @@ public class Eolienne extends ProdEnergie{
         retours[1] =  produireEnergie(c);
         return retours;
     }
+
+    @Override
+    public String toString() {
+        return "éolienne de niveau "+this.getNiveau();
+    }
 }
