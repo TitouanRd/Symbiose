@@ -160,78 +160,68 @@ public class Plaine extends TypeTerrain {
             proteger.addActionListener(ev -> { if(nb_tour()) proteger(); frame.dispose(); });
 
             JButton construire = new JButton("Construire");
-        construire.addActionListener(e -> {
-            if (nb_tour()) {
-                // 1. Création de la DEUXIÈME fenêtre
-                JFrame frame1 = new JFrame("Construire");
-
-                JPanel panel1 = new JPanel();
-                panel1.setLayout(new BorderLayout()); // Correction ici : panel1 et non panel
-
-                JPanel panel2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
-                JLabel label = new JLabel("Constructions possibles:");
-                panel1.add(label, BorderLayout.NORTH); // Optionnel : pour un meilleur rendu visuel
-
-                JButton cen = new JButton("Centrale");
-                cen.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        Centrale centrale = new Centrale(0,"charbon","centrale",0,0,0,0,0,0,0,0,0,0);
-                        getParent().construire(centrale);
-                        frame1.dispose();
-                    }
-                });
-                panel2.add(cen);
-
-                JButton eol = new JButton("Eolienne");
-                eol.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        Eolienne eolienne = new Eolienne(0,"Eolienne",0,0,0,0,0,0,0,0,0,0);
-                        getParent().construire(eolienne);
-                        frame1.dispose();
-                    }
-                });
-                panel2.add(eol);
-
-                JButton pano = new JButton("PanneauSolaire");
-                pano.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        PanneauSollaire panneausolaire = new PanneauSollaire(0,"panneausolaire",0,0,0,0,0,0,0,0,0,0);
-                        getParent().construire(panneausolaire);
-                        frame1.dispose();
-                    }
-                });
-                panel2.add(pano);
-
-                JButton del = new JButton("Détruire");
-                del.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        getParent().detruire();
-                        frame1.dispose();
-                    }
-                });
-                panel2.add(del);
-
-                panel1.add(panel2, BorderLayout.CENTER);
-
-                frame1.add(panel1);
-
-                // CORRECTION : On applique les configurations à frame1 et on utilise DISPOSE_ON_CLOSE
-                frame1.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                frame1.pack();
-                frame1.setLocationRelativeTo(null);
-                frame1.setVisible(true);
-
-                // CORRECTION : On ne ferme la première fenêtre QUE si la condition nb_tour() est vraie
-                frame.dispose();
-            }
-        });
+            construire.addActionListener(e -> {
+                if (nb_tour()) {
+                    // 1. Création de la DEUXIÈME fenêtre
+                    JFrame frame1 = new JFrame("Construire");
+                    JPanel panel1 = new JPanel();
+                    panel1.setLayout(new BorderLayout()); // Correction ici : panel1 et non panel
+                    JPanel panel2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                    JLabel label = new JLabel("Constructions possibles:");
+                    panel1.add(label, BorderLayout.NORTH); // Optionnel : pour un meilleur rendu visuel
+                    JButton cen = new JButton("Centrale");
+                    cen.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            Centrale centrale = new Centrale(0,"charbon","centrale",0,0,0,0,0,0,0,0,0,0);
+                            getParent().construire(centrale);
+                            frame1.dispose();
+                        }
+                    });
+                    panel2.add(cen);
+                    JButton eol = new JButton("Eolienne");
+                    eol.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            Eolienne eolienne = new Eolienne(0,"Eolienne",0,0,0,0,0,0,0,0,0,0);
+                            getParent().construire(eolienne);
+                            frame1.dispose();
+                        }
+                    });
+                    panel2.add(eol);
+                    JButton pano = new JButton("PanneauSolaire");
+                    pano.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            PanneauSollaire panneausolaire = new PanneauSollaire(0,"panneausolaire",0,0,0,0,0,0,0,0,0,0);
+                            getParent().construire(panneausolaire);
+                            frame1.dispose();
+                        }
+                    });
+                    panel2.add(pano);
+                    JButton del = new JButton("Détruire");
+                    del.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            getParent().detruire();
+                            frame1.dispose();
+                        }
+                    });
+                    panel2.add(del);
+                    panel1.add(panel2, BorderLayout.CENTER);
+                    frame1.add(panel1);
+                    // CORRECTION : On applique les configurations à frame1 et on utilise DISPOSE_ON_CLOSE
+                    frame1.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    frame1.pack();
+                    frame1.setLocationRelativeTo(null);
+                    frame1.setVisible(true);
+                    // CORRECTION : On ne ferme la première fenêtre QUE si la condition nb_tour() est vraie
+                    frame.dispose();
+                }
+            });
 
 // Configuration et affichage de la PREMIÈRE fenêtre
-        buttonPanel.add(construire);
+            buttonPanel.add(construire);
             buttonPanel.add(creuser);
             buttonPanel.add(planterForet);
             buttonPanel.add(proteger);
