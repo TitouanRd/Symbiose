@@ -1,3 +1,6 @@
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -5,7 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import java.awt.*;
+
 
 public class Lac extends TypeTerrain {
     private float vitesseCourant;
@@ -112,6 +115,7 @@ public class Lac extends TypeTerrain {
         // --- LOGIQUE DE VÉRIFICATION DU TUTORIEL ---
         boolean modeTuto = (Ville.getNbVille() == 0);
 
+
         if (modeTuto) {
             // En mode tuto, on remplace les boutons par un message explicatif explicite
             JLabel labelAvertissement = new JLabel("⚠️ Action impossible. Construisez d'abord votre Ville sur une Plaine !");
@@ -136,7 +140,85 @@ public class Lac extends TypeTerrain {
                 frame.dispose();
             });
             buttonPanel.add(remplire);
+
+            JButton construire = new JButton("Construire");
+        construire.addActionListener(e -> {
+            if (nb_tour()) {
+                // 1. Création de la DEUXIÈME fenêtre
+                JFrame frame1 = new JFrame("Construire");
+
+                JPanel panel1 = new JPanel();
+                panel1.setLayout(new BorderLayout()); // Correction ici : panel1 et non panel
+
+                JPanel panel2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                JLabel label = new JLabel("Constructions possibles:");
+                panel1.add(label, BorderLayout.NORTH); // Optionnel : pour un meilleur rendu visuel
+
+                JButton ex = new JButton("Exploitation");
+                ex.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Exploitation exploitation = new Exploitation(0,"exploitation",0,0,0,0,0,0,0,0);
+                        getParent().construire(exploitation);
+                        frame1.dispose();
+                    }
+                });
+
+                panel2.add(ex);
+                JButton hydro = new JButton("Hydrolienne");
+                hydro.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Hydrolienne hydro = new Hydrolienne(0,"hydrolienne",0,0,0,0,0,0,0,0,0,0);
+                        getParent().construire(hydro);
+                        frame1.dispose();
+                    }
+                });
+                panel2.add(hydro);
+
+                JButton eol = new JButton("Eolienne");
+                eol.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Eolienne eolienne = new Eolienne(0,"Eolienne",0,0,0,0,0,0,0,0,0,0);
+                        getParent().construire(eolienne);
+                        frame1.dispose();
+                    }
+                });
+                panel2.add(eol);
+
+                JButton del = new JButton("Détruire");
+                del.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        getParent().detruire();
+                        frame1.dispose();
+                    }
+                });
+                panel2.add(del);
+
+
+
+                panel1.add(panel2, BorderLayout.CENTER);
+
+                frame1.add(panel1);
+
+                // CORRECTION : On applique les configurations à frame1 et on utilise DISPOSE_ON_CLOSE
+                frame1.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame1.pack();
+                frame1.setLocationRelativeTo(null);
+                frame1.setVisible(true);
+
+                // CORRECTION : On ne ferme la première fenêtre QUE si la condition nb_tour() est vraie
+                frame.dispose();
+            }
+        });
+
+// Configuration et affichage de la PREMIÈRE fenêtre
+        buttonPanel.add(construire);
+            
         }
+
         panel.add(buttonPanel);
 
         frame.add(panel);

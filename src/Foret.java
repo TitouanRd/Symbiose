@@ -1,5 +1,7 @@
-import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
 
 public class Foret extends TypeTerrain {
     private float recouvrementArbre;
@@ -102,6 +104,7 @@ public class Foret extends TypeTerrain {
 
         JPanel buttonPanel = new JPanel();
 
+
         boolean modeTuto = (Ville.getNbVille() == 0);
 
         if (modeTuto) {
@@ -128,14 +131,63 @@ public class Foret extends TypeTerrain {
                 frame.dispose();
             });
             buttonPanel.add(raser);
+            JButton construire = new JButton("Construire");
+        construire.addActionListener(e -> {
+            if (nb_tour()) {
+                // 1. Création de la DEUXIÈME fenêtre
+                JFrame frame1 = new JFrame("Construire");
+
+                JPanel panel1 = new JPanel();
+                panel1.setLayout(new BorderLayout()); // Correction ici : panel1 et non panel
+
+                JPanel panel2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                JLabel label = new JLabel("Constructions possibles:");
+                panel1.add(label, BorderLayout.NORTH); // Optionnel : pour un meilleur rendu visuel
+
+                JButton ex = new JButton("Exploitation");
+                ex.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Exploitation exploitation = new Exploitation(0,"exploitation",0,0,0,0,0,0,0,0);
+                        getParent().construire(exploitation);
+                        frame1.dispose();
+                    }
+                });
+                panel2.add(ex);
+
+                JButton del = new JButton("Détruire");
+                del.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        getParent().detruire();
+                        frame1.dispose();
+                    }
+                });
+                panel2.add(del);
+                panel1.add(panel2, BorderLayout.CENTER);
+
+                frame1.add(panel1);
+
+                // CORRECTION : On applique les configurations à frame1 et on utilise DISPOSE_ON_CLOSE
+                frame1.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame1.pack();
+                frame1.setLocationRelativeTo(null);
+                frame1.setVisible(true);
+
+                // CORRECTION : On ne ferme la première fenêtre QUE si la condition nb_tour() est vraie
+                frame.dispose();
+                buttonPanel.add(construire);
+            }
+        });
         }
 
+// Configuration et affichage de la PREMIÈRE fenêtre
         panel.add(buttonPanel);
 
         frame.add(panel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // La fenêtre principale quitte le programme
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-    }
 
-}
+}};
