@@ -11,6 +11,7 @@ public class Partie {
     private Runnable updateListener;
     private Runnable mapChangeListener;
     private final Carte carte;
+    private Ville ville;
 
     public Partie(String difficulter, boolean limite_depassee, int limite_tour, int nb_actions, int nb_tour, float production_energie, int ressources, String tailleCarte) {
         this.difficulter = difficulter;
@@ -24,6 +25,14 @@ public class Partie {
         }
     public int getRessources() {
         return ressources;
+    }
+
+    public Ville getVille() {
+        return ville;
+    }
+
+    public void setVille(Ville ville) {
+        this.ville = ville;
     }
 
     public float getProduction_energie() {

@@ -1,8 +1,49 @@
 public class Eolienne extends ProdEnergie{
     private float hauteur;
-    public Eolienne(float hauteur,String type,int niveau,int cout,int productionEnergie, int productionRess,int entretienEnergie, int entretienRess,float impactQualite,float impactPollution,float impactVie, float rendement) {
-        super(type, niveau, cout, productionEnergie,  productionRess, entretienEnergie,  entretienRess, impactQualite, impactPollution,impactVie,rendement);
-        this.hauteur = hauteur;
+    public Eolienne(int niveau) {
+        // 1. Appel obligatoire à super() en TOUT PREMIER avec des valeurs par défaut
+        // Signature de ProdEnergie : niveau, cout, prodEnergie, prodRess, entretEnergie, entretRess, impQualite, impPollution, impVie, rendement
+        super(niveau, 0, 0, 0, 0, 0, 0f, 0f, 0f, 0f);
+
+        // 2. Affectation des valeurs spécifiques selon le niveau
+        switch (niveau) {
+            case 1 -> {
+                this.setCout(10);
+                this.setProductionEnergie(0); // À modifier plus tard quand l'éolienne produira effectivement
+                this.setProductionRess(0);
+                this.setEntretienEnergie(10);
+                this.setEntretienRess(5);
+                this.setImpactQualite(10f);
+                this.setImpactPollution(10f);
+                this.setImpactVie(5f);
+                this.setRendement(20f);
+                this.setHauteur(10f); // Attribut propre à l'Éolienne
+            }
+            case 2 -> {
+                this.setCout(20);
+                this.setProductionEnergie(0);
+                this.setProductionRess(0);
+                this.setEntretienEnergie(40);
+                this.setEntretienRess(20);
+                this.setImpactQualite(15f);
+                this.setImpactPollution(20f);
+                this.setImpactVie(10f);
+                this.setRendement(60f);
+                this.setHauteur(20f);
+            }
+            default -> {
+                this.setCout(0);
+                this.setProductionEnergie(0);
+                this.setProductionRess(0);
+                this.setEntretienEnergie(0);
+                this.setEntretienRess(0);
+                this.setImpactQualite(0f);
+                this.setImpactPollution(0f);
+                this.setImpactVie(0f);
+                this.setRendement(0f);
+                this.setHauteur(0f);
+            }
+        }
     }
     public float getHauteur() {
         return hauteur;

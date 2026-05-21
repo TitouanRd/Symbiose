@@ -148,7 +148,7 @@ public class Foret extends TypeTerrain {
                     ex.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            Exploitation exploitation = new Exploitation(0,"exploitation",0,0,0,0,0,0,0,0);
+                            Exploitation exploitation = new Exploitation(partie.getVille().getNiveau());
                             getParent().construire(exploitation);
                             frame1.dispose();
                         }

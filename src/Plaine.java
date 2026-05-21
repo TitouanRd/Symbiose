@@ -130,7 +130,7 @@ public class Plaine extends TypeTerrain {
             // On vérifie s'il reste des actions disponibles au joueur
             if (partie.getNb_actions() > 0) {
                 // 1. Modification du modèle
-                parent.setConstruction(new Ville("Ville", 1, 0, 0, 0, 0, 0, 0f, 0f));
+                parent.setConstruction(new Ville( 1));
                 parent.setOccupation(true);
 
                 // 2. Consommation de la ressource d'action
@@ -173,7 +173,7 @@ public class Plaine extends TypeTerrain {
                     cen.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            Centrale centrale = new Centrale(0,"charbon","centrale",0,0,0,0,0,0,0,0,0,0);
+                            Centrale centrale = new Centrale(partie.getVille().getNiveau());
                             getParent().construire(centrale);
                             frame1.dispose();
                         }
@@ -183,7 +183,7 @@ public class Plaine extends TypeTerrain {
                     eol.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            Eolienne eolienne = new Eolienne(0,"Eolienne",0,0,0,0,0,0,0,0,0,0);
+                            Eolienne eolienne = new Eolienne(partie.getVille().getNiveau());
                             getParent().construire(eolienne);
                             frame1.dispose();
                         }
@@ -193,7 +193,7 @@ public class Plaine extends TypeTerrain {
                     pano.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            PanneauSollaire panneausolaire = new PanneauSollaire(0,"panneausolaire",0,0,0,0,0,0,0,0,0,0);
+                            PanneauSollaire panneausolaire = new PanneauSollaire(partie.getVille().getNiveau());
                             getParent().construire(panneausolaire);
                             frame1.dispose();
                         }

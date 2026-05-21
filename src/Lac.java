@@ -158,7 +158,7 @@ public class Lac extends TypeTerrain {
                     ex.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            Exploitation exploitation = new Exploitation(0,"exploitation",0,0,0,0,0,0,0,0);
+                            Exploitation exploitation = new Exploitation(partie.getVille().getNiveau());
                             getParent().construire(exploitation);
                             frame1.dispose();
                         }
@@ -169,7 +169,7 @@ public class Lac extends TypeTerrain {
                     hydro.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            Hydrolienne hydro = new Hydrolienne(0,"hydrolienne",0,0,0,0,0,0,0,0,0,0);
+                            Hydrolienne hydro = new Hydrolienne(partie.getVille().getNiveau());
                             getParent().construire(hydro);
                             frame1.dispose();
                         }
@@ -180,7 +180,7 @@ public class Lac extends TypeTerrain {
                     eol.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            Eolienne eolienne = new Eolienne(0,"Eolienne",0,0,0,0,0,0,0,0,0,0);
+                            Eolienne eolienne = new Eolienne(partie.getVille().getNiveau());
                             getParent().construire(eolienne);
                             frame1.dispose();
                         }
