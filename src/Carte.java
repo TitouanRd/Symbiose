@@ -198,39 +198,50 @@ public class Carte {
     }
     public Number[] fin_Tour() {
         System.err.println("Carte fin_Tour");
-        Number[] retoursTotal = new Number[3];
+        Number[] retoursTotal = new Number[4]; // Augmenté à 4 car tu utilises l'index [3] à la fin !
+        retoursTotal[0] = 0f; // Utilise '0f' pour initialiser en Float
+        retoursTotal[1] = 0f;
+        retoursTotal[2] = 0f; // 0 = Tout va bien, 1 = Limite dépassée
+        retoursTotal[3] = 0f;
+
         float pollutionMoyenne = 0;
         float qualiteMoyenne = 0;
         float tauxForetMoyen = 0;
         float temperaturMoyenne = 0;
 
+        int totalCases = this.grille.length * this.grille[0].length;
+
         for (Case[] x : this.grille) {
             for (Case c : x) {
                 Number[] retours = c.fin_Tour();
-                c.show();
-                retoursTotal[0] = (float)retoursTotal[0] + (float)retours[0]; // ressources
-                retoursTotal[1] = (float)retoursTotal[1] + (float)retours[1]; // prod energie
-                pollutionMoyenne += (float)retoursTotal[2];
-                qualiteMoyenne += (float)retoursTotal[3];
-                tauxForetMoyen +=  (float)retoursTotal[4];
-                temperaturMoyenne += (float)retoursTotal[5];
 
+                // Correction des additions avec .floatValue() pour être 100% sécurisé
+                retoursTotal[0] = retoursTotal[0].floatValue() + retours[0].floatValue(); // ressources
+                retoursTotal[1] = retoursTotal[1].floatValue() + retours[1].floatValue(); // prod energie
+
+                // GROSSE ERREUR CORRIGÉE ICI : On accumule les données de la CASE 'retours', pas de 'retoursTotal'
+                pollutionMoyenne += retours[2].floatValue();
+                qualiteMoyenne += retours[3].floatValue();
+                tauxForetMoyen += retours[4].floatValue();
+                temperaturMoyenne += retours[5].floatValue();
             }
         }
-        pollutionMoyenne /= (this.grille[0].length*this.grille[1].length);
-        qualiteMoyenne /= (this.grille[0].length*this.grille[1].length);
-        tauxForetMoyen /= (this.grille[0].length*this.grille[1].length);
-        temperaturMoyenne /= (this.grille[0].length*this.grille[1].length);
 
-        if (pollutionMoyenne > this.limite_pollution) {
-            retoursTotal[3] = 1;  //limite de pollution
-        } else if (qualiteMoyenne < this.limite_vie_sauvage) {
-            retoursTotal[3] = 1;  // limite de qualite de la carte
-        } else if (tauxForetMoyen < this.limite_foret) {
-            retoursTotal[3] = 1;  //limite des forets
-        } else if (temperaturMoyenne > this.limite_temp) {
-            retoursTotal[3] = 1;
+        // Calcul des moyennes
+        pollutionMoyenne /= totalCases;
+        qualiteMoyenne /= totalCases;
+        tauxForetMoyen /= totalCases;
+        temperaturMoyenne /= totalCases;
+
+        // Vérification des limites planétaires
+        if (pollutionMoyenne > this.limite_pollution ||
+                qualiteMoyenne < this.limite_vie_sauvage ||
+                tauxForetMoyen < this.limite_foret ||
+                temperaturMoyenne > this.limite_temp) {
+
+            retoursTotal[2] = 1f;  // On utilise l'index 2 pour signaler le game over à Partie
         }
+
         return retoursTotal;
     }
 
