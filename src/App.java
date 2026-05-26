@@ -75,7 +75,7 @@ public class App {
 
     private static void lancerGrille(String taille) {
         try {
-            Partie partie = new Partie(null, false, 20, 1, 0, 10, 100, taille); // Ex: 100 ressources pour commencer
+            Partie partie = new Partie("facile", taille); // Ex: 100 ressources pour commencer
             Ville.resetNbVille();
             JFrame grilleFrame = new JFrame("Hex Grid - " + taille);
             grilleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

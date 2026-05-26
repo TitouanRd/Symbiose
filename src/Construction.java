@@ -10,7 +10,7 @@ public abstract class Construction{
 
     public Construction(int niveau,int cout,int productionEnergie, int productionRess,int entretienEnergie, int entretienRess,float impactQualite,float impactPollution) {
         this.niveau = niveau;
-        this.cout = cout;;
+        this.cout = cout;
         this.productionEnergie = productionEnergie;
         this.productionRess = productionRess;
         this.entretienEnergie = entretienEnergie;

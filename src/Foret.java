@@ -51,10 +51,32 @@ public class Foret extends TypeTerrain {
         return sb.toString();
     }
 
-     @Override
-    public Number[] fin_tour() {
+    @Override
+    public Number[] fin_tour(Case c) {
+        // 1. Évolution du taux de couverture des arbres selon la pollution de la case
+        if (c.getPollution() > 60f) {
+            // Environnement toxique : les arbres dépérissent (-2% par tour)
+            this.recouvrementArbre -= 2f;
+        } else if (c.getPollution() < 20f && this.recouvrementArbre < 100f) {
+            // Environnement sain : la forêt s'étend naturellement (+1% par tour)
+            this.recouvrementArbre += 1f;
+        }
+
+        // Sécurité pour rester entre 0% et 100%
+        this.recouvrementArbre = Math.min(100f, Math.max(0f, this.recouvrementArbre));
+
+        // 2. Action écosystémique : la forêt absorbe activement la pollution de la case
+        // Plus il y a d'arbres, plus l'absorption est efficace
+        float absorption = (this.recouvrementArbre * 0.1f); // Max -10 de pollution par tour
+        c.setPollution(Math.max(0f, c.getPollution() - absorption));
+
+        // Les arbres purifient et améliorent la qualité générale de la case
+        float bonusQualite = (this.recouvrementArbre * 0.05f);
+        c.setQualite(Math.min(100f, c.getQualite() + bonusQualite));
+
+        // 3. On renvoie le vrai taux mis à jour pour que la Case puisse le transmettre
         Number[] retour = new Number[1];
-        retour[0] = 0f;
+        retour[0] = this.recouvrementArbre;
         return retour;
     }
 
@@ -118,6 +140,8 @@ public class Foret extends TypeTerrain {
                 // Vérifie si l'action peut être effectuée (nombre d'actions restantes), puis exploite la forêt
                 if (nb_tour()) {
                     exploiter();
+                }else {
+                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
                 }
                 frame.dispose();
             });
@@ -127,13 +151,16 @@ public class Foret extends TypeTerrain {
             raser.addActionListener(e -> {
                 if (nb_tour()) {
                     raser();
+                }else {
+                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
                 }
                 frame.dispose();
             });
             buttonPanel.add(raser);
+
             JButton construire = new JButton("Construire");
             construire.addActionListener(e -> {
-                if (nb_tour()) {
+
                     // 1. Création de la DEUXIÈME fenêtre
                     JFrame frame1 = new JFrame("Construire");
 
@@ -148,9 +175,34 @@ public class Foret extends TypeTerrain {
                     ex.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            Exploitation exploitation = new Exploitation(partie.getVille().getNiveau());
-                            getParent().construire(exploitation);
-                            frame1.dispose();
+                            if (nb_tour()) {
+                                int niveau = 1;
+                                Partie currentPartie = getParent().getCarte().getPartie();
+                                if (currentPartie != null && currentPartie.getVille() != null) {
+                                    niveau = currentPartie.getVille().getNiveau();
+                                }
+                                Exploitation exploitation = new Exploitation(niveau);
+                                if (currentPartie.getRessources() >= exploitation.getCout()) {
+
+                                    // 2. On DÉDUIT le coût de la construction du compte de la Partie
+                                    currentPartie.setRessources(currentPartie.getRessources() - exploitation.getCout());
+
+                                    // 3. On construit physiquement le bâtiment
+                                    getParent().construire(exploitation);
+                                    getParent().setOccupation(true);
+                                    frame1.dispose();
+
+                                    // 4. On rafraîchit l'interface
+                                    currentPartie.notifyMapChanged();
+                                    currentPartie.notifyUpdateListener();
+
+                                } else {
+                                    // Si pas assez d'argent, on avertit le joueur sans fermer le menu
+                                    JOptionPane.showMessageDialog(frame1, "Ressources insuffisantes ! Coût : " + exploitation.getCout(), "Erreur", JOptionPane.WARNING_MESSAGE);
+                                }
+                            }else {
+                                JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
+                            }
                         }
                     });
                     panel2.add(ex);
@@ -159,8 +211,12 @@ public class Foret extends TypeTerrain {
                     del.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            getParent().detruire();
-                            frame1.dispose();
+                            if (nb_tour()) {
+                                getParent().detruire();
+                                frame1.dispose();
+                            }else {
+                                JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
+                            }
                         }
                     });
                     panel2.add(del);
@@ -176,9 +232,10 @@ public class Foret extends TypeTerrain {
 
                     // CORRECTION : On ne ferme la première fenêtre QUE si la condition nb_tour() est vraie
                     frame.dispose();
-                    buttonPanel.add(construire);
-                }
+
+
             });
+            buttonPanel.add(construire);
         }
 // Configuration et affichage de la PREMIÈRE fenêtre
         panel.add(buttonPanel);

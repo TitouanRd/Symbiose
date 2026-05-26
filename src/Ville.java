@@ -2,32 +2,30 @@ public class Ville extends Construction {
     private static int nbVille = 0;
 
     public Ville(int niveau) {
-
+        // Appel obligatoire à super() EN TOUT PREMIER avec des valeurs par défaut
         super(niveau, 0, 0, 0, 0, 0, 0f, 0f);
 
-        // 2. On modifie les attributs en fonction du niveau grâce aux setters
-        switch(niveau) {
-            case 1:
-                this.setCout(10);
+        // Affectation des valeurs équilibrées
+        switch (niveau) {
+            case 1 -> {
+                this.setCout(100);
                 this.setProductionEnergie(0);
                 this.setProductionRess(0);
-                this.setEntretienEnergie(10);
-                this.setEntretienRess(5);
-                this.setImpactQualite(10f);
-                this.setImpactPollution(10f);
-                break;
-
-            case 2:
-                this.setCout(20);
+                this.setEntretienEnergie(20);
+                this.setEntretienRess(10);
+                this.setImpactQualite(1.0f);
+                this.setImpactPollution(2.0f);
+            }
+            case 2 -> {
+                this.setCout(300);
                 this.setProductionEnergie(0);
                 this.setProductionRess(0);
-                this.setEntretienEnergie(40);
-                this.setEntretienRess(20);
-                this.setImpactQualite(15f);
-                this.setImpactPollution(20f);
-                break; // Attention : tu avais oublié ce break dans ton code d'origine !
-
-            default:
+                this.setEntretienEnergie(50);
+                this.setEntretienRess(25);
+                this.setImpactQualite(3.0f);
+                this.setImpactPollution(5.0f);
+            }
+            default -> {
                 this.setCout(0);
                 this.setProductionEnergie(0);
                 this.setProductionRess(0);
@@ -35,7 +33,7 @@ public class Ville extends Construction {
                 this.setEntretienRess(0);
                 this.setImpactQualite(0f);
                 this.setImpactPollution(0f);
-                break;
+            }
         }
         nbVille++;
     }
@@ -47,32 +45,51 @@ public class Ville extends Construction {
     // SOLUTION ERREUR 1 : Implémenter la méthode manquante de Construction
     @Override
     public Number[] BilanTour(Case c) {
-        System.out.println("Bilan du tour pour la ville...");
+        // 1. Impact environnemental (La ville génère des déchets et de la pollution)
+        float nouvellePollution = c.getPollution() + this.getImpactPollution();
+        float nouvelleQualite = c.getQualite() - this.getImpactQualite();
+
+        c.setPollution(Math.min(100f, Math.max(0f, nouvellePollution)));
+        c.setQualite(Math.min(100f, Math.max(0f, nouvelleQualite)));
+
+        // 2. Bilan économique
         Number[] retours = new Number[2];
-        retours[0] = - consommerRessources(c);
-        retours[1] =  - consommerEnergie(c);
+        retours[0] = - consommerRessources(c); // Dépense (Négatif)
+        retours[1] = - consommerEnergie(c);    // Dépense (Négatif)
+
         return retours;
     }
 
     public float consommerEnergie(Case c) {
-        // Logique
-        float enrg_csm =0;
+        // 1. On récupère le coût nominal d'énergie
+        float enrg_csm = this.getEntretienEnergie();
+
+        // 2. Facteur Qualité : un environnement pollué coûte plus cher à maintenir
+        // Math.max(1f, ...) empêche la division par zéro en cas de catastrophe écologique
+        float facteurQualite = 100f / Math.max(1f, c.getQualite());
+        enrg_csm *= facteurQualite;
+
+        // 3. Impact météo (si la ville est sur une plaine)
         if (c.getTypeTerrain() instanceof Plaine) {
-            float qualite = c.getQualite();
-            enrg_csm = qualite  * this.getNiveau() * ((Plaine)c.getTypeTerrain()).getRichesseSol();
+            Plaine plaine = (Plaine) c.getTypeTerrain();
+            // S'il fait très froid ou très chaud, la ville consomme plus (chauffage/clim)
+            if (plaine.getTemperatureSol() < 5f || plaine.getTemperatureSol() > 30f) {
+                enrg_csm *= 1.2f; // +20% de consommation électrique
+            }
         }
+
         return enrg_csm;
     }
 
     public float consommerRessources(Case c) {
-        // Logique
-        float res_csm =0;
-        if (c.getTypeTerrain() instanceof Plaine) {
-            float qualite = c.getQualite();
-            float richesseSol = ((Plaine)c.getTypeTerrain()).getRichesseSol();
-            res_csm = qualite * richesseSol  * this.getNiveau() ;
-        }
-        return res_csm;
+        // 1. On récupère le coût nominal en ressources
+        float res_csm = this.getEntretienRess();
+
+        // 2. Même logique : la population consomme plus de ressources médicales/importées
+        // si l'environnement direct est dégradé.
+        float facteurQualite = 100f / Math.max(1f, c.getQualite());
+
+        return res_csm * facteurQualite;
     }
 
     public static int getNbVille() {

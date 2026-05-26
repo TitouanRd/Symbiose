@@ -1,13 +1,7 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 
 
 public class Lac extends TypeTerrain {
@@ -63,9 +57,17 @@ public class Lac extends TypeTerrain {
     }
 
     @Override
-    public Number[] fin_tour() {
+    public Number[] fin_tour(Case c) {
+        if (c.getPollution() < 40f) {
+            // Auto-épuration naturelle de l'eau si la pollution reste modérée
+            c.setPollution(Math.max(0f, c.getPollution() - 1.5f));
+        } else {
+            // Si le lac est saturé de produits toxiques, sa qualité s'effondre d'elle-même
+            c.setQualite(Math.max(0f, c.getQualite() - 2f));
+        }
+
         Number[] retour = new Number[1];
-        retour[0] = 0f;
+        retour[0] = 0f; // Pas de forêt sur un lac
         return retour;
     }
     @Override
@@ -127,6 +129,8 @@ public class Lac extends TypeTerrain {
             exploiter.addActionListener(e -> {
                 if (nb_tour()) { // vérifie si le joueur a des actions restantes pour exploiter le lac
                     exploiter();
+                }else {
+                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
                 }
                 frame.dispose();
 
@@ -138,6 +142,8 @@ public class Lac extends TypeTerrain {
             remplire.addActionListener(e -> {
                 if (nb_tour()) {
                     remplir();
+                }else {
+                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
                 }
                 frame.dispose();
             });
@@ -145,7 +151,7 @@ public class Lac extends TypeTerrain {
 
             JButton construire = new JButton("Construire");
             construire.addActionListener(e -> {
-                if (nb_tour()) {
+
                     // 1. Création de la DEUXIÈME fenêtre
                     JFrame frame1 = new JFrame("Construire");
 
@@ -158,37 +164,72 @@ public class Lac extends TypeTerrain {
 
                     JButton ex = new JButton("Exploitation");
                     ex.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
+
+                            @Override
+                            public void actionPerformed (ActionEvent e){
+                                if (nb_tour()) {
                             int niveau = 1;
                             Partie currentPartie = getParent().getCarte().getPartie();
                             if (currentPartie != null && currentPartie.getVille() != null) {
                                 niveau = currentPartie.getVille().getNiveau();
                             }
                             Exploitation exploitation = new Exploitation(niveau);
-                            getParent().construire(exploitation);
-                            getParent().setOccupation(true);
-                            frame1.dispose();
+                            if (currentPartie.getRessources() >= exploitation.getCout()) {
+
+                                // 2. On DÉDUIT le coût de la construction du compte de la Partie
+                                currentPartie.setRessources(currentPartie.getRessources() - exploitation.getCout());
+
+                                // 3. On construit physiquement le bâtiment
+                                getParent().construire(exploitation);
+                                getParent().setOccupation(true);
+                                frame1.dispose();
+
+                                // 4. On rafraîchit l'interface
+                                currentPartie.notifyMapChanged();
+                                currentPartie.notifyUpdateListener();
+
+                            } else {
+                                // Si pas assez d'argent, on avertit le joueur sans fermer le menu
+                                JOptionPane.showMessageDialog(frame1, "Ressources insuffisantes ! Coût : " + exploitation.getCout(), "Erreur", JOptionPane.WARNING_MESSAGE);
+                            }
+                        }else {
+                                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
+                                }
                         }
                     });
                     panel2.add(ex);
 
                     JButton hydro = new JButton("Hydrolienne");
                     hydro.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
+                            @Override
+                            public void actionPerformed (ActionEvent e){
+                            if (nb_tour()) {
                             int niveau = 1;
                             Partie currentPartie = getParent().getCarte().getPartie();
                             if (currentPartie != null && currentPartie.getVille() != null) {
                                 niveau = currentPartie.getVille().getNiveau();
                             }
                             Hydrolienne hydro = new Hydrolienne(niveau);
-                            getParent().construire(hydro);
-                            getParent().setOccupation(true);
-                            frame1.dispose();
-                            if (currentPartie != null) {
+                            if (currentPartie.getRessources() >= hydro.getCout()) {
+
+                                // 2. On DÉDUIT le coût de la construction du compte de la Partie
+                                currentPartie.setRessources(currentPartie.getRessources() - hydro.getCout());
+
+                                // 3. On construit physiquement le bâtiment
+                                getParent().construire(hydro);
+                                getParent().setOccupation(true);
+                                frame1.dispose();
+
+                                // 4. On rafraîchit l'interface
                                 currentPartie.notifyMapChanged();
                                 currentPartie.notifyUpdateListener();
+
+                            } else {
+                                // Si pas assez d'argent, on avertit le joueur sans fermer le menu
+                                JOptionPane.showMessageDialog(frame1, "Ressources insuffisantes ! Coût : " + hydro.getCout(), "Erreur", JOptionPane.WARNING_MESSAGE);
+                            }
+                        }else {
+                                JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
                             }
                         }
                     });
@@ -198,19 +239,34 @@ public class Lac extends TypeTerrain {
                     eol.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
+                                if (nb_tour()) {
                             int niveau = 1;
                             Partie currentPartie = getParent().getCarte().getPartie();
                             if (currentPartie != null && currentPartie.getVille() != null) {
                                 niveau = currentPartie.getVille().getNiveau();
                             }
                             Eolienne eolienne = new Eolienne(niveau);
-                            getParent().construire(eolienne);
-                            getParent().setOccupation(true);
-                            frame1.dispose();
-                            if (currentPartie != null) {
+                            if (currentPartie.getRessources() >= eolienne.getCout()) {
+
+                                // 2. On DÉDUIT le coût de la construction du compte de la Partie
+                                currentPartie.setRessources(currentPartie.getRessources() - eolienne.getCout());
+
+                                // 3. On construit physiquement le bâtiment
+                                getParent().construire(eolienne);
+                                getParent().setOccupation(true);
+                                frame1.dispose();
+
+                                // 4. On rafraîchit l'interface
                                 currentPartie.notifyMapChanged();
                                 currentPartie.notifyUpdateListener();
+
+                            } else {
+                                // Si pas assez d'argent, on avertit le joueur sans fermer le menu
+                                JOptionPane.showMessageDialog(frame1, "Ressources insuffisantes ! Coût : " + eolienne.getCout(), "Erreur", JOptionPane.WARNING_MESSAGE);
                             }
+                        }else {
+                                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
+                                }
                         }
                     });
                     panel2.add(eol);
@@ -219,18 +275,22 @@ public class Lac extends TypeTerrain {
                     del.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            int niveau = 1;
-                            Partie currentPartie = getParent().getCarte().getPartie();
-                            if (currentPartie != null && currentPartie.getVille() != null) {
-                                niveau = currentPartie.getVille().getNiveau();
-                            }
-                            
-                            getParent().detruire();
-                            getParent().setOccupation(false);
-                            frame1.dispose();
-                            if (currentPartie != null) {
-                                currentPartie.notifyMapChanged();
-                                currentPartie.notifyUpdateListener();
+                            if (nb_tour()) {
+                                int niveau = 1;
+                                Partie currentPartie = getParent().getCarte().getPartie();
+                                if (currentPartie != null && currentPartie.getVille() != null) {
+                                    niveau = currentPartie.getVille().getNiveau();
+                                }
+
+                                getParent().detruire();
+                                getParent().setOccupation(false);
+                                frame1.dispose();
+                                if (currentPartie != null) {
+                                    currentPartie.notifyMapChanged();
+                                    currentPartie.notifyUpdateListener();
+                                }
+                            }else {
+                                JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
                             }
                         }
                     });
@@ -250,7 +310,7 @@ public class Lac extends TypeTerrain {
 
                     // CORRECTION : On ne ferme la première fenêtre QUE si la condition nb_tour() est vraie
                     frame.dispose();
-                }
+
             });
             buttonPanel.add(construire);
         }

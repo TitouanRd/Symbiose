@@ -82,9 +82,17 @@ public class Plaine extends TypeTerrain {
     }
 
     @Override
-    public Number[] fin_tour() {
+    public Number[] fin_tour(Case c) {
+        if (c.getQualite() < 25f) {
+            // Érosion et dégradation du sol : la richesse diminue
+            this.richesseSol = Math.max(0f, this.richesseSol - 1f);
+        } else if (c.getQualite() > 80f && this.richesseSol < 100f) {
+            // Repos du sol : la terre se régénère très lentement
+            this.richesseSol = Math.min(100f, this.richesseSol + 0.5f);
+        }
+
         Number[] retour = new Number[1];
-        retour[0] = 0f;
+        retour[0] = 0f; // Pas de forêt native sur une plaine
         return retour;
     }
 
@@ -132,9 +140,10 @@ public class Plaine extends TypeTerrain {
                 // 1. Modification du modèle
                 parent.setConstruction(new Ville( 1));
                 parent.setOccupation(true);
-
+                partie.setRessources(partie.getRessources() - parent.getConstruction().getCout());
                 // 2. Consommation de la ressource d'action
                 partie.setNb_actions(partie.getNb_actions() - 1);
+                partie.setVille((Ville) parent.getConstruction());
 
                 // 3. Notification pour mettre à jour le texte du haut (Bandeau de l'App)
                 partie.notifyUpdateListener();
@@ -153,17 +162,38 @@ public class Plaine extends TypeTerrain {
         } else {
             // Boutons standards (pense à leur passer aussi la vérification via 'partie' si nécessaire)
             JButton creuser = new JButton("Creuser");
-            creuser.addActionListener(ev -> { if(nb_tour()) creuser(); frame.dispose(); });
+            creuser.addActionListener(ev -> {
+                if(nb_tour()) {
+                    creuser();
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
+                }
+                frame.dispose();
+            });
 
             JButton planterForet = new JButton("Planter une forêt");
-            planterForet.addActionListener(ev -> { if(nb_tour()) planterForet(); frame.dispose(); });
+            planterForet.addActionListener(ev -> {
+                if(nb_tour()) {
+                    planterForet();
+
+                }else {
+                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
+                }
+                frame.dispose();
+            });
 
             JButton proteger = new JButton("Proteger");
-            proteger.addActionListener(ev -> { if(nb_tour()) proteger(); frame.dispose(); });
+            proteger.addActionListener(ev -> {
+                if(nb_tour()) {
+                    proteger();
+                } else {
+                JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
+                };
+                frame.dispose();
+            });
 
             JButton construire = new JButton("Construire");
             construire.addActionListener(e -> {
-                if (nb_tour()) {
                     // 1. Création de la DEUXIÈME fenêtre
                     JFrame frame1 = new JFrame("Construire");
                     JPanel panel1 = new JPanel();
@@ -175,18 +205,33 @@ public class Plaine extends TypeTerrain {
                     cen.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            int niveau = 1;
-                            Partie currentPartie = getParent().getCarte().getPartie();
-                            if (currentPartie != null && currentPartie.getVille() != null) {
-                                niveau = currentPartie.getVille().getNiveau();
-                            }
-                            Centrale centrale = new Centrale(niveau);
-                            getParent().construire(centrale);
-                            getParent().setOccupation(true);
-                            frame1.dispose();
-                            if (currentPartie != null) {
-                                currentPartie.notifyMapChanged();
-                                currentPartie.notifyUpdateListener();
+                            if (nb_tour()) {
+                                int niveau = 1;
+                                Partie currentPartie = getParent().getCarte().getPartie();
+                                if (currentPartie != null && currentPartie.getVille() != null) {
+                                    niveau = currentPartie.getVille().getNiveau();
+                                }
+                                Centrale centrale = new Centrale(niveau);
+                                if (currentPartie.getRessources() >= centrale.getCout()) {
+
+                                    // 2. On DÉDUIT le coût de la construction du compte de la Partie
+                                    currentPartie.setRessources(currentPartie.getRessources() - centrale.getCout());
+
+                                    // 3. On construit physiquement le bâtiment
+                                    getParent().construire(centrale);
+                                    getParent().setOccupation(true);
+                                    frame1.dispose();
+
+                                    // 4. On rafraîchit l'interface
+                                    currentPartie.notifyMapChanged();
+                                    currentPartie.notifyUpdateListener();
+
+                                } else {
+                                    // Si pas assez d'argent, on avertit le joueur sans fermer le menu
+                                    JOptionPane.showMessageDialog(frame1, "Ressources insuffisantes ! Coût : " + centrale.getCout(), "Erreur", JOptionPane.WARNING_MESSAGE);
+                                }
+                            }else {
+                                JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
                             }
                         }
                     });
@@ -195,18 +240,34 @@ public class Plaine extends TypeTerrain {
                     eol.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            int niveau = 1;
-                            Partie currentPartie = getParent().getCarte().getPartie();
-                            if (currentPartie != null && currentPartie.getVille() != null) {
-                                niveau = currentPartie.getVille().getNiveau();
+                            if (nb_tour()) {
+                                int niveau = 1;
+                                Partie currentPartie = getParent().getCarte().getPartie();
+                                if (currentPartie != null && currentPartie.getVille() != null) {
+                                    niveau = currentPartie.getVille().getNiveau();
+                                }
+                                Eolienne eolienne = new Eolienne(niveau);
+                                if (currentPartie.getRessources() >= eolienne.getCout()) {
+
+                                    // 2. On DÉDUIT le coût de la construction du compte de la Partie
+                                    currentPartie.setRessources(currentPartie.getRessources() - eolienne.getCout());
+
+                                    // 3. On construit physiquement le bâtiment
+                                    getParent().construire(eolienne);
+                                    getParent().setOccupation(true);
+                                    frame1.dispose();
+
+                                    // 4. On rafraîchit l'interface
+                                    currentPartie.notifyMapChanged();
+                                    currentPartie.notifyUpdateListener();
+
+                                } else {
+                                    // Si pas assez d'argent, on avertit le joueur sans fermer le menu
+                                    JOptionPane.showMessageDialog(frame1, "Ressources insuffisantes ! Coût : " + eolienne.getCout(), "Erreur", JOptionPane.WARNING_MESSAGE);
+                                }
                             }
-                            Eolienne eolienne = new Eolienne(niveau);
-                            getParent().construire(eolienne);
-                            getParent().setOccupation(true);
-                            frame1.dispose();
-                            if (currentPartie != null) {
-                                currentPartie.notifyMapChanged();
-                                currentPartie.notifyUpdateListener();
+                            else {
+                                JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
                             }
                         }
                     });
@@ -215,18 +276,33 @@ public class Plaine extends TypeTerrain {
                     pano.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            int niveau = 1;
-                            Partie currentPartie = getParent().getCarte().getPartie();
-                            if (currentPartie != null && currentPartie.getVille() != null) {
-                                niveau = currentPartie.getVille().getNiveau();
-                            }
-                            PanneauSollaire panneausolaire = new PanneauSollaire(niveau);
-                            getParent().construire(panneausolaire);
-                            getParent().setOccupation(true);
-                            frame1.dispose();
-                            if (currentPartie != null) {
-                                currentPartie.notifyMapChanged();
-                                currentPartie.notifyUpdateListener();
+                            if (nb_tour()) {
+                                int niveau = 1;
+                                Partie currentPartie = getParent().getCarte().getPartie();
+                                if (currentPartie != null && currentPartie.getVille() != null) {
+                                    niveau = currentPartie.getVille().getNiveau();
+                                }
+                                PanneauSolaire panneausolaire = new PanneauSolaire(niveau);
+                                if (currentPartie.getRessources() >= panneausolaire.getCout()) {
+
+                                    // 2. On DÉDUIT le coût de la construction du compte de la Partie
+                                    currentPartie.setRessources(currentPartie.getRessources() - panneausolaire.getCout());
+
+                                    // 3. On construit physiquement le bâtiment
+                                    getParent().construire(panneausolaire);
+                                    getParent().setOccupation(true);
+                                    frame1.dispose();
+
+                                    // 4. On rafraîchit l'interface
+                                    currentPartie.notifyMapChanged();
+                                    currentPartie.notifyUpdateListener();
+
+                                } else {
+                                    // Si pas assez d'argent, on avertit le joueur sans fermer le menu
+                                    JOptionPane.showMessageDialog(frame1, "Ressources insuffisantes ! Coût : " + panneausolaire.getCout(), "Erreur", JOptionPane.WARNING_MESSAGE);
+                                }
+                            }else {
+                                JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
                             }
                         }
                     });
@@ -235,6 +311,7 @@ public class Plaine extends TypeTerrain {
                     del.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
+                            if (nb_tour()) {
                             getParent().detruire();
                             frame1.dispose();
                             Partie currentPartie = getParent().getCarte().getPartie();
@@ -242,7 +319,10 @@ public class Plaine extends TypeTerrain {
                                 currentPartie.notifyMapChanged();
                                 currentPartie.notifyUpdateListener();
                             }
-                        }
+                        }else {
+                                JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
+                            }
+                            }
                     });
                     panel2.add(del);
                     panel1.add(panel2, BorderLayout.CENTER);
@@ -252,9 +332,6 @@ public class Plaine extends TypeTerrain {
                     frame1.setLocationRelativeTo(null);
                     frame1.setVisible(true);
                     frame.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
-                }
             });
 
             buttonPanel.add(construire);

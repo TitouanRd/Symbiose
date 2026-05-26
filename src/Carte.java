@@ -15,20 +15,31 @@ public class Carte {
     private Partie partie;
 
 
-    public Carte(String tailleCarte, float foret, float limite_foret, float limite_pollution, float limite_temp, float limite_vie_sauvage, float pollution, boolean presVile, float temp, float vie_sauvage, Partie partie) {
+    public Carte(String tailleCarte,Partie partie) {
+        // 1. Dépendance externe
+        // Comme la signature ne prend plus "Partie", il faudra la lier via un setter
+        // dans ta classe Partie juste après l'instanciation : carte.setPartie(this);
         this.partie = partie;
-        this.foret = foret;
-        this.limite_foret = limite_foret;
-        this.limite_pollution = limite_pollution;
-        this.limite_temp = limite_temp;
-        this.limite_vie_sauvage = limite_vie_sauvage;
-        this.pollution = pollution;
-        this.presVile = presVile;
-        this.temp = temp;
-        this.vie_sauvage = vie_sauvage;
+
+        // 2. Valeurs écologiques initiales (Une carte saine au tour 0)
+        this.pollution = 0f;           // Aucune pollution au départ
+        this.vie_sauvage = 100f;       // Qualité de l'environnement maximale
+        this.foret = 70f;              // Couverture forestière généreuse par défaut
+        this.temp = 15f;               // Température tempérée standard (15°C)
+        this.presVile = false;         // Pas de ville posée (le tutoriel s'en chargera)
+
+        // 3. Limites planétaires (Conditions de Game Over)
+        // Fixées empiriquement pour offrir un bon défi sans être frustrantes
+        this.limite_pollution = 80f;   // DÉFAITE si la pollution moyenne dépasse 80
+        this.limite_vie_sauvage = 20f; // DÉFAITE si la qualité moyenne chute sous 20
+        this.limite_foret = 15f;       // DÉFAITE si moins de 15% de forêts restantes
+        this.limite_temp = 25f;        // DÉFAITE si la température moyenne s'envole (+10°C)
+
+        // 4. Dimensions de la grille
         int lignes;
         int colones;
-        switch (tailleCarte) {// ici les taille c pour mon ordi 
+
+        switch (tailleCarte.toLowerCase()) {
             case "petite" -> {
                 lignes = 15;
                 colones = 10;
@@ -47,17 +58,21 @@ public class Carte {
             }
         }
 
-        // Initialisation de la grille
+        // 5. Initialisation des structures de données
         this.grille = new Case[colones][lignes];
+
+        // Remplissage de la matrice et génération des biomes
         this.initialiserGrilleAleatoire(colones, lignes);
+
+        // Détection des voisines pour le système de diffusion (Automate cellulaire)
         this.detectionCasesVoisines();
     }
-    
+
 
     private void initialiserGrilleAleatoire(int largeur, int hauteur) {
         Random random = new Random();
         this.grille = new Case[largeur][hauteur];
-        
+
         // Une météo par défaut pour commencer
         Meteo meteoParDefaut = new Meteo("Clair", 10f, 5f, 50f, 100f, 0f);
 
@@ -66,7 +81,7 @@ public class Carte {
 
                 // 1. Poids de base (Probabilités de départ)
                 int poidsPlaine = 100; // Très dominant par défaut
-                int poidsForet = 15;
+                int poidsForet = 35;
                 int poidsLac = 10;
 
                 // 2. Bonus de voisinage (Haut et Gauche)
@@ -103,7 +118,7 @@ public class Carte {
                 grille[x][y].setMeteo(meteoParDefaut);
             }
         }
-    }   
+    }
 
     public  void detectionCasesVoisines() {
         for (int i = 0; i < this.grille.length; i++){
@@ -198,48 +213,51 @@ public class Carte {
     }
     public Number[] fin_Tour() {
         System.err.println("Carte fin_Tour");
-        Number[] retoursTotal = new Number[4]; // Augmenté à 4 car tu utilises l'index [3] à la fin !
-        retoursTotal[0] = 0f; // Utilise '0f' pour initialiser en Float
-        retoursTotal[1] = 0f;
-        retoursTotal[2] = 0f; // 0 = Tout va bien, 1 = Limite dépassée
-        retoursTotal[3] = 0f;
+        Number[] retoursTotal = {0f, 0f, 0f, 0f};
 
-        float pollutionMoyenne = 0;
-        float qualiteMoyenne = 0;
-        float tauxForetMoyen = 0;
-        float temperaturMoyenne = 0;
-
+        float p = 0, q = 0, f = 0, t = 0;
         int totalCases = this.grille.length * this.grille[0].length;
 
-        for (Case[] x : this.grille) {
-            for (Case c : x) {
+        for (Case[] ligne : this.grille) {
+            for (Case c : ligne) {
                 Number[] retours = c.fin_Tour();
 
-                // Correction des additions avec .floatValue() pour être 100% sécurisé
-                retoursTotal[0] = retoursTotal[0].floatValue() + retours[0].floatValue(); // ressources
-                retoursTotal[1] = retoursTotal[1].floatValue() + retours[1].floatValue(); // prod energie
+                retoursTotal[0] = retoursTotal[0].floatValue() + retours[0].floatValue();
+                retoursTotal[1] = retoursTotal[1].floatValue() + retours[1].floatValue();
 
-                // GROSSE ERREUR CORRIGÉE ICI : On accumule les données de la CASE 'retours', pas de 'retoursTotal'
-                pollutionMoyenne += retours[2].floatValue();
-                qualiteMoyenne += retours[3].floatValue();
-                tauxForetMoyen += retours[4].floatValue();
-                temperaturMoyenne += retours[5].floatValue();
+                p += retours[2].floatValue();
+                q += retours[3].floatValue();
+                f += retours[4].floatValue();
+                t += retours[5].floatValue();
             }
         }
 
+        // Vérification directe des limites planétaires via les moyennes
+        if ((p / totalCases) > this.limite_pollution ||
+                (q / totalCases) < this.limite_vie_sauvage ||
+                (f / totalCases) < this.limite_foret ||
+                (t / totalCases) > this.limite_temp) {
+
+            retoursTotal[2] = 1f;  // Signal de Game Over
+        }
+
         // Calcul des moyennes
-        pollutionMoyenne /= totalCases;
-        qualiteMoyenne /= totalCases;
-        tauxForetMoyen /= totalCases;
-        temperaturMoyenne /= totalCases;
+        float moyP = p / totalCases;
+        float moyQ = q / totalCases;
+        float moyF = f / totalCases;
+        float moyT = t / totalCases;
 
-        // Vérification des limites planétaires
-        if (pollutionMoyenne > this.limite_pollution ||
-                qualiteMoyenne < this.limite_vie_sauvage ||
-                tauxForetMoyen < this.limite_foret ||
-                temperaturMoyenne > this.limite_temp) {
+        // AFFICHE LE DIAGNOSTIC DANS LA CONSOLE
+        System.out.println("\n--- DIAGNOSTIC DES LIMITES PLANÉTAIRES ---");
+        System.out.println("Pollution Moyenne : " + moyP + " / Limite max : " + this.limite_pollution);
+        System.out.println("Qualité Moyenne   : " + moyQ + " / Limite min : " + this.limite_vie_sauvage);
+        System.out.println("Taux de Forêt     : " + moyF + " / Limite min : " + this.limite_foret);
+        System.out.println("Température       : " + moyT + " / Limite max : " + this.limite_temp);
+        System.out.println("------------------------------------------\n");
 
-            retoursTotal[2] = 1f;  // On utilise l'index 2 pour signaler le game over à Partie
+        // Vérification directe des limites planétaires via les moyennes calculées
+        if (moyP > this.limite_pollution || moyQ < this.limite_vie_sauvage || moyF < this.limite_foret || moyT > this.limite_temp) {
+            retoursTotal[2] = 1f;  // Signal de Game Over
         }
 
         return retoursTotal;

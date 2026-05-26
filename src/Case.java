@@ -52,22 +52,59 @@ public class Case {
     }
 
     public Number[] fin_Tour() {
-        System.err.println("Case fin_Tour");
         this.meteo.modificationMeteo();
-        Number [] retoursCase = new Number[6];
-        Number[] retoursTerrain = this.typeTerrain.fin_tour();
+
+        // --- 1. DIFFUSION ENVIRONNEMENTALE (Interaction avec les voisines) ---
+        if (this.voisines != null) {
+            float apportPollution = 0f;
+            float apportQualite = 0f;
+
+            for (Case voisine : this.voisines) {
+                if (voisine != null) {
+                    // a) La pollution ruisselle :
+                    // Si la voisine est plus polluée que nous, on "aspire" 5% de la différence
+                    if (voisine.getPollution() > this.pollution) {
+                        apportPollution += (voisine.getPollution() - this.pollution) * 0.05f;
+                    }
+
+                    // b) L'écosystème rayonne :
+                    // Si la voisine est beaucoup plus saine (différence > 20), elle nous purifie un peu
+                    if (voisine.getQualite() > this.qualite + 20f) {
+                        apportQualite += 0.5f;
+                    }
+                }
+            }
+            // Application de la diffusion
+            this.pollution += apportPollution;
+            this.qualite += apportQualite;
+
+            // Sécurisation stricte des bornes (0 à 100)
+            this.pollution = Math.min(100f, Math.max(0f, this.pollution));
+            this.qualite = Math.min(100f, Math.max(0f, this.qualite));
+        }
+
+        // --- 2. RÉACTION NATURELLE DU TERRAIN ---
+        // On passe 'this' au terrain pour qu'il applique ses propres règles
+        Number[] retoursTerrain = this.typeTerrain.fin_tour(this);
+
+        Number[] retoursCase = new Number[6];
+
+        // --- 3. GESTION DE L'INFRASTRUCTURE HUMAINE ---
         if (construction != null) {
             Number[] retourConstruction = construction.BilanTour(this);
             retoursCase[0] = retourConstruction[0]; // ressources
             retoursCase[1] = retourConstruction[1]; // prod energie
         } else {
-            retoursCase[0] = 0; // ressources
-            retoursCase[1] = 0; // prod energie
+            retoursCase[0] = 0f; // ressources
+            retoursCase[1] = 0f; // prod energie
         }
+
+        // --- 4. COLLECTE DES DONNÉES POUR LE BILAN DU JEU ---
         retoursCase[2] = this.pollution;
         retoursCase[3] = this.qualite;
-        retoursCase[4] = retoursTerrain[0]; //taux_foret
+        retoursCase[4] = retoursTerrain[0]; // Taux de forêt
         retoursCase[5] = this.temperature;
+
         return retoursCase;
     }
 
