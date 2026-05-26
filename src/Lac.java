@@ -160,21 +160,36 @@ public class Lac extends TypeTerrain {
                     ex.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            Exploitation exploitation = new Exploitation(0,"exploitation",0,0,0,0,0,0,0,0);
+                            int niveau = 1;
+                            Partie currentPartie = getParent().getCarte().getPartie();
+                            if (currentPartie != null && currentPartie.getVille() != null) {
+                                niveau = currentPartie.getVille().getNiveau();
+                            }
+                            Exploitation exploitation = new Exploitation(niveau);
                             getParent().construire(exploitation);
+                            getParent().setOccupation(true);
                             frame1.dispose();
-
                         }
                     });
-
                     panel2.add(ex);
+
                     JButton hydro = new JButton("Hydrolienne");
                     hydro.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            Hydrolienne hydro = new Hydrolienne(0,"hydrolienne",0,0,0,0,0,0,0,0,0,0);
+                            int niveau = 1;
+                            Partie currentPartie = getParent().getCarte().getPartie();
+                            if (currentPartie != null && currentPartie.getVille() != null) {
+                                niveau = currentPartie.getVille().getNiveau();
+                            }
+                            Hydrolienne hydro = new Hydrolienne(niveau);
                             getParent().construire(hydro);
+                            getParent().setOccupation(true);
                             frame1.dispose();
+                            if (currentPartie != null) {
+                                currentPartie.notifyMapChanged();
+                                currentPartie.notifyUpdateListener();
+                            }
                         }
                     });
                     panel2.add(hydro);
@@ -183,9 +198,19 @@ public class Lac extends TypeTerrain {
                     eol.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            Eolienne eolienne = new Eolienne(0,"Eolienne",0,0,0,0,0,0,0,0,0,0);
+                            int niveau = 1;
+                            Partie currentPartie = getParent().getCarte().getPartie();
+                            if (currentPartie != null && currentPartie.getVille() != null) {
+                                niveau = currentPartie.getVille().getNiveau();
+                            }
+                            Eolienne eolienne = new Eolienne(niveau);
                             getParent().construire(eolienne);
+                            getParent().setOccupation(true);
                             frame1.dispose();
+                            if (currentPartie != null) {
+                                currentPartie.notifyMapChanged();
+                                currentPartie.notifyUpdateListener();
+                            }
                         }
                     });
                     panel2.add(eol);
@@ -194,8 +219,19 @@ public class Lac extends TypeTerrain {
                     del.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
+                            int niveau = 1;
+                            Partie currentPartie = getParent().getCarte().getPartie();
+                            if (currentPartie != null && currentPartie.getVille() != null) {
+                                niveau = currentPartie.getVille().getNiveau();
+                            }
+                            
                             getParent().detruire();
+                            getParent().setOccupation(false);
                             frame1.dispose();
+                            if (currentPartie != null) {
+                                currentPartie.notifyMapChanged();
+                                currentPartie.notifyUpdateListener();
+                            }
                         }
                     });
                     panel2.add(del);

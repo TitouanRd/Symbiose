@@ -1,5 +1,4 @@
 public abstract class Construction{
-    private String type;
     private int niveau;
     private int cout;
     private int productionEnergie;
@@ -9,8 +8,7 @@ public abstract class Construction{
     private float impactQualite;
     private float impactPollution;
 
-    public Construction(String type,int niveau,int cout,int productionEnergie, int productionRess,int entretienEnergie, int entretienRess,float impactQualite,float impactPollution) {
-        this.type = type;
+    public Construction(int niveau,int cout,int productionEnergie, int productionRess,int entretienEnergie, int entretienRess,float impactQualite,float impactPollution) {
         this.niveau = niveau;
         this.cout = cout;;
         this.productionEnergie = productionEnergie;
@@ -20,9 +18,6 @@ public abstract class Construction{
         this.impactQualite = impactQualite;
         this.impactPollution = impactPollution;
 
-    }
-    public String getType() {
-        return type;
     }
     public int getNiveau() {
         return niveau;
@@ -46,9 +41,6 @@ public abstract class Construction{
     }
     public float getImpactPollution() {
         return impactPollution;
-    }
-    public void setType(String type) {
-        this.type = type;
     }
     public void setNiveau(int niveau) {
         this.niveau = niveau;

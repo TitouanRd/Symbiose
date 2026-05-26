@@ -19,6 +19,7 @@ class HexagonTile {
     protected Point2D.Double position;
     protected Color baseColor;
     protected BufferedImage sprite;
+    protected BufferedImage constructionSprite;
     protected int highlightTick = 0;
     protected final int maxHighlightTicks = 15;
     protected final int highlightOffset = 5;
@@ -28,6 +29,7 @@ class HexagonTile {
         this.position = position;
         this.baseColor = color;
         this.sprite = sprite;
+        this.constructionSprite = null;
     }
 
     public void update() {
@@ -75,6 +77,10 @@ class HexagonTile {
         this.sprite = sprite;
     }
 
+    public void setConstructionSprite(BufferedImage constructionSprite) {
+        this.constructionSprite = constructionSprite;
+    }
+
     public void render(Graphics2D g2d) {
         Polygon poly = getPolygon();
 
@@ -91,12 +97,13 @@ class HexagonTile {
             g2d.setClip(previousClip);
         }
 
-        // 3. NOUVEAU : On applique l'effet de survol (Highlight) PAR-DESSUS l'image
-        if (highlightTick > 0) {
-            // Un voile blanc dont l'opacité dépend du highlightTick
-            int alpha = Math.min(255, highlightTick * 10);
-            g2d.setColor(new Color(255, 255, 255, alpha));
-            g2d.fillPolygon(poly);
+        // 3. On dessine le sprite de construction par-dessus le terrain
+        if (constructionSprite != null) {
+            Shape previousClip = g2d.getClip();
+            g2d.setClip(poly);
+            Rectangle bounds = poly.getBounds();
+            g2d.drawImage(constructionSprite, bounds.x, bounds.y, bounds.width, bounds.height, null);
+            g2d.setClip(previousClip);
         }
 
         // 4. Bordure
@@ -223,17 +230,26 @@ public class HexGridApp extends JPanel {
         }).start();
     }
 
-    // Charge tous les sprites nécessaires
+    // charge tous les sprites disponibles du dossier images
     private void loadSprites() {
-        // 1. Chargement des terrains
-        String[] terrains = {"Foret", "Lac", "Plaine"};
-        for (String terrain : terrains) {
-            chargerImage(terrain);
-        }
-
-        // 2. Chargement automatique des constructions de ton tableau
-        for (String construction : TOUTES_LES_CONSTRUCTIONS) {
-            chargerImage(construction);
+        File dir = new File("images");
+        File[] files = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".png"));
+        if (files != null) {
+            for (File file : files) {
+                String name = file.getName();
+                String key = name.substring(0, name.lastIndexOf('.'));
+                try {
+                    BufferedImage img = ImageIO.read(file);
+                    sprites.put(key, img);
+                    sprites.put(key.toLowerCase(), img);
+                } catch (IOException e) {
+                    System.err.println("Impossible de charger " + name + ", sprite ignoré.");
+                    sprites.put(key, null);
+                    sprites.put(key.toLowerCase(), null);
+                }
+            }
+        } else {
+            System.err.println("Dossier images introuvable : impossible de charger les sprites.");
         }
     }
 
@@ -317,26 +333,48 @@ public class HexGridApp extends JPanel {
         return list;
     }
 
-    // Met à jour les sprites de tous les hexagones (appelé après une construction²)
+    private BufferedImage getSpriteByType(String type) {
+        if (type == null) return null;
+        BufferedImage sprite = sprites.get(type);
+        if (sprite == null) {
+            sprite = sprites.get(type.toLowerCase());
+        }
+        return sprite;
+    }
+
+    private BufferedImage getTerrainSprite(Case caseType) {
+        if (caseType == null || caseType.getTypeTerrain() == null) return null;
+        return getSpriteByType(caseType.getTypeTerrain().getClass().getSimpleName());
+    }
+
+    private BufferedImage getConstructionSprite(Case caseType) {
+        if (caseType == null || caseType.getConstruction() == null) return null;
+        return getSpriteByType(caseType.getConstruction().getClass().getSimpleName());
+    }
+
+    //raffraichie la grille en fonction de la carte
     public void refresh() {
         if (carte == null || hexagons == null) return;
         for (int i = 0; i < hexagons.size(); i++) {
             int gridY = i / numX;
             int gridX = i % numX;
             Case caseType = carte.getGrille()[gridY][gridX];
-
-            // Applique le sprite calculé (Bâtiment ou Terrain)
-            hexagons.get(i).setSprite(genererSpriteCase(caseType));
+            BufferedImage terrainSprite = getTerrainSprite(caseType);
+            BufferedImage constructionSprite = getConstructionSprite(caseType);
+            hexagons.get(i).setSprite(terrainSprite);
+            hexagons.get(i).setConstructionSprite(constructionSprite);
         }
         repaint();
     }
 
     // Crée un objet hexagone physique pour l'affichage
     private HexagonTile createHex(Point2D.Double pos, double r, boolean flat, Case caseType) {
-        BufferedImage sprite = genererSpriteCase(caseType);
+        BufferedImage terrainSprite = getTerrainSprite(caseType);
+        BufferedImage constructionSprite = getConstructionSprite(caseType);
         Color c = new Color(0, 0, 0, 0);
-
-        return flat ? new FlatTopHexagonTile(r, pos, c, sprite) : new HexagonTile(r, pos, c, sprite);
+        HexagonTile tile = flat ? new FlatTopHexagonTile(r, pos, c, terrainSprite) : new HexagonTile(r, pos, c, terrainSprite);
+        tile.setConstructionSprite(constructionSprite);
+        return tile;
     }
 
     @Override

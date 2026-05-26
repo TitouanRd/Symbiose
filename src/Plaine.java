@@ -130,7 +130,7 @@ public class Plaine extends TypeTerrain {
             // On vérifie s'il reste des actions disponibles au joueur
             if (partie.getNb_actions() > 0) {
                 // 1. Modification du modèle
-                parent.setConstruction(new Ville("Ville", 1, 0, 0, 0, 0, 0, 0f, 0f));
+                parent.setConstruction(new Ville( 1));
                 parent.setOccupation(true);
 
                 // 2. Consommation de la ressource d'action
@@ -138,6 +138,8 @@ public class Plaine extends TypeTerrain {
 
                 // 3. Notification pour mettre à jour le texte du haut (Bandeau de l'App)
                 partie.notifyUpdateListener();
+                // Rafraîchit immédiatement la grille pour afficher le sprite de la construction
+                partie.notifyMapChanged();
 
                 frame.dispose();
             } else {
@@ -173,9 +175,19 @@ public class Plaine extends TypeTerrain {
                     cen.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            Centrale centrale = new Centrale(0,"charbon","centrale",0,0,0,0,0,0,0,0,0,0);
+                            int niveau = 1;
+                            Partie currentPartie = getParent().getCarte().getPartie();
+                            if (currentPartie != null && currentPartie.getVille() != null) {
+                                niveau = currentPartie.getVille().getNiveau();
+                            }
+                            Centrale centrale = new Centrale(niveau);
                             getParent().construire(centrale);
+                            getParent().setOccupation(true);
                             frame1.dispose();
+                            if (currentPartie != null) {
+                                currentPartie.notifyMapChanged();
+                                currentPartie.notifyUpdateListener();
+                            }
                         }
                     });
                     panel2.add(cen);
@@ -183,9 +195,19 @@ public class Plaine extends TypeTerrain {
                     eol.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            Eolienne eolienne = new Eolienne(0,"Eolienne",0,0,0,0,0,0,0,0,0,0);
+                            int niveau = 1;
+                            Partie currentPartie = getParent().getCarte().getPartie();
+                            if (currentPartie != null && currentPartie.getVille() != null) {
+                                niveau = currentPartie.getVille().getNiveau();
+                            }
+                            Eolienne eolienne = new Eolienne(niveau);
                             getParent().construire(eolienne);
+                            getParent().setOccupation(true);
                             frame1.dispose();
+                            if (currentPartie != null) {
+                                currentPartie.notifyMapChanged();
+                                currentPartie.notifyUpdateListener();
+                            }
                         }
                     });
                     panel2.add(eol);
@@ -193,9 +215,19 @@ public class Plaine extends TypeTerrain {
                     pano.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            PanneauSollaire panneausolaire = new PanneauSollaire(0,"panneausolaire",0,0,0,0,0,0,0,0,0,0);
+                            int niveau = 1;
+                            Partie currentPartie = getParent().getCarte().getPartie();
+                            if (currentPartie != null && currentPartie.getVille() != null) {
+                                niveau = currentPartie.getVille().getNiveau();
+                            }
+                            PanneauSollaire panneausolaire = new PanneauSollaire(niveau);
                             getParent().construire(panneausolaire);
+                            getParent().setOccupation(true);
                             frame1.dispose();
+                            if (currentPartie != null) {
+                                currentPartie.notifyMapChanged();
+                                currentPartie.notifyUpdateListener();
+                            }
                         }
                     });
                     panel2.add(pano);
@@ -205,22 +237,26 @@ public class Plaine extends TypeTerrain {
                         public void actionPerformed(ActionEvent e) {
                             getParent().detruire();
                             frame1.dispose();
+                            Partie currentPartie = getParent().getCarte().getPartie();
+                            if (currentPartie != null) {
+                                currentPartie.notifyMapChanged();
+                                currentPartie.notifyUpdateListener();
+                            }
                         }
                     });
                     panel2.add(del);
                     panel1.add(panel2, BorderLayout.CENTER);
                     frame1.add(panel1);
-                    // CORRECTION : On applique les configurations à frame1 et on utilise DISPOSE_ON_CLOSE
                     frame1.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                     frame1.pack();
                     frame1.setLocationRelativeTo(null);
                     frame1.setVisible(true);
-                    // CORRECTION : On ne ferme la première fenêtre QUE si la condition nb_tour() est vraie
                     frame.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
                 }
             });
 
-// Configuration et affichage de la PREMIÈRE fenêtre
             buttonPanel.add(construire);
             buttonPanel.add(creuser);
             buttonPanel.add(planterForet);
@@ -231,6 +267,7 @@ public class Plaine extends TypeTerrain {
 
         panel.add(buttonPanel);
         frame.add(panel);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);

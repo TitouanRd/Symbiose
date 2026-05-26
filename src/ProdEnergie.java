@@ -2,8 +2,8 @@ public abstract class ProdEnergie extends Construction {
     private float impactVie;
     private float rendement;
 
-    public ProdEnergie(String type,int niveau,int cout,int productionEnergie, int productionRess,int entretienEnergie, int entretienRess,float impactQualite,float impactPollution,float impactVie, float rendement) {
-        super(type, niveau, cout, productionEnergie,  productionRess, entretienEnergie,  entretienRess, impactQualite, impactPollution);
+    public ProdEnergie(int niveau,int cout,int productionEnergie, int productionRess,int entretienEnergie, int entretienRess,float impactQualite,float impactPollution,float impactVie, float rendement) {
+        super(niveau, cout, productionEnergie,  productionRess, entretienEnergie,  entretienRess, impactQualite, impactPollution);
         this.impactVie = impactVie;
         this.rendement = rendement;
     }

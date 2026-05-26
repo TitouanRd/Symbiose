@@ -97,10 +97,10 @@ public class App {
                 if (partie.getNb_tour() == 0) {
                     int nbVilles = Ville.getNbVille(); // Utilise le compteur statique de ta classe Ville
                     if (nbVilles == 0) {
-                        infoArea.append("\n⚠️ OBJECTIF OBLIGATOIRE : Vous devez poser votre première Ville sur une Plaine pour commencer !");
+                        infoArea.append("\n OBJECTIF OBLIGATOIRE : Vous devez poser votre première Ville sur une Plaine pour commencer !");
                         fin_tour.setEnabled(false); // Désactive le bouton tant qu'aucune ville n'est construite
                     } else {
-                        infoArea.append("\n✅ Objectif atteint ! Vous pouvez maintenant terminer votre tour.");
+                        infoArea.append("\n Objectif atteint ! Vous pouvez maintenant terminer votre tour.");
                         fin_tour.setEnabled(true);
                     }
                 } else {
@@ -123,6 +123,7 @@ public class App {
                 public void actionPerformed(ActionEvent e) {
                     partie.fin_Tour();
                     gridApp.refresh();
+                    partie.notifyUpdateListener();
                 }
             });
 
