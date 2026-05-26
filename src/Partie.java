@@ -119,10 +119,12 @@ public class Partie {
 
     public void fin_Tour() {
         System.out.println("partie fin_Tour");
+        System.out.println("Actions avant fin_Tour: " + this.nb_actions);
         this.nb_tour += 1;
 
         if (this.nb_tour == this.limite_tour) {
             System.out.println("Partie fini, nombre de tours dépassé");
+            notifyUpdateListener();
             return; // On s'arrête ici
         }
 
@@ -139,9 +141,9 @@ public class Partie {
         } else {
             // Nouveau tour valide
             System.out.println("nouveau tour");
-            this.nb_actions = 3;
-            notifyUpdateListener(); // Rafraîchit les infos de la partie
+            this.setNb_actions(3);
             System.out.println("partie show");
         }
+        notifyUpdateListener();
     }
 }
