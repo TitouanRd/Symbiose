@@ -2,7 +2,7 @@
     "java.project.sourcePaths": [
         "src"
     ],
-    "java.project.outputPath": "bin",
+    "java.project.outputPath": "out/production/Symbiose_test",
     "java.project.referencedLibraries": [
         "lib/**/*.jar"
     ]

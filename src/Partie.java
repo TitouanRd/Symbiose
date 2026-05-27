@@ -155,6 +155,7 @@ public class Partie {
                     "DÉFAITE : La nature n'a pas survécu à votre expansion. Les limites planétaires ont été franchies.",
                     "Game Over", JOptionPane.ERROR_MESSAGE);
             notifyUpdateListener();
+            System.exit(0);
             return; // Stoppe net l'exécution
         }
 
@@ -164,6 +165,7 @@ public class Partie {
                     "DÉFAITE : Vous êtes ruiné ! Vos infrastructures s'effondrent par manque d'entretien.",
                     "Banqueroute", JOptionPane.ERROR_MESSAGE);
             notifyUpdateListener();
+            System.exit(0);
             return;
         }
 
@@ -173,6 +175,7 @@ public class Partie {
                     "DÉFAITE : Blackout total ! Votre ville est paralysée par le manque d'énergie.",
                     "Blackout", JOptionPane.ERROR_MESSAGE);
             notifyUpdateListener();
+            System.exit(0);
             return;
         }
 
@@ -182,6 +185,7 @@ public class Partie {
                     "DÉFAITE : Le temps imparti est écoulé. Vous n'avez pas atteint l'indépendance énergétique.",
                     "Fin du temps", JOptionPane.WARNING_MESSAGE);
             notifyUpdateListener();
+            System.exit(0);
             return;
         }
 
@@ -193,6 +197,7 @@ public class Partie {
                     "VICTOIRE ! Vous avez atteint l'objectif énergétique tout en maintenant l'équilibre du système !",
                     "Félicitations", JOptionPane.INFORMATION_MESSAGE);
             notifyUpdateListener();
+            System.exit(0);
             return;
         }
 
