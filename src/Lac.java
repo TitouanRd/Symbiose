@@ -117,19 +117,6 @@ public class Lac extends TypeTerrain {
         // --- LOGIQUE DE VÉRIFICATION DU TUTORIEL ---
         boolean modeTuto = (Ville.getNbVille() == 0);
 
-<<<<<<< HEAD
-=======
-<<<<<<< Updated upstream
-        JButton remplire = new JButton("Remplir");
-        remplire.addActionListener(e -> {
-            if (nb_tour()) {
-                remplir();
-            }
-            frame.dispose();
-        });
-        buttonPanel.add(remplire);
-=======
->>>>>>> IHM
 
         if (modeTuto) {
             // En mode tuto, on remplace les boutons par un message explicatif explicite
@@ -137,7 +124,6 @@ public class Lac extends TypeTerrain {
             labelAvertissement.setForeground(Color.RED);
             buttonPanel.add(labelAvertissement);
         } else {
-<<<<<<< HEAD
             // Le jeu standard reprend si la ville est construite
             JButton exploiter = new JButton("Exploiter");
             exploiter.addActionListener(e -> {
@@ -151,9 +137,6 @@ public class Lac extends TypeTerrain {
 
             });
             buttonPanel.add(exploiter);
-=======
-            
->>>>>>> IHM
 
             JButton remplire = new JButton("Remplir");
             remplire.addActionListener(e -> {
@@ -331,10 +314,6 @@ public class Lac extends TypeTerrain {
             });
             buttonPanel.add(construire);
         }
-<<<<<<< HEAD
-=======
->>>>>>> Stashed changes
->>>>>>> IHM
 
         panel.add(buttonPanel);
 

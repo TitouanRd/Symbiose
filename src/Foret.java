@@ -127,11 +127,6 @@ public class Foret extends TypeTerrain {
         JPanel buttonPanel = new JPanel();
 
 
-<<<<<<< HEAD
-=======
-<<<<<<< Updated upstream
-=======
->>>>>>> IHM
         boolean modeTuto = (Ville.getNbVille() == 0);
 
         if (modeTuto) {
@@ -140,7 +135,6 @@ public class Foret extends TypeTerrain {
             labelAvertissement.setForeground(Color.RED);
             buttonPanel.add(labelAvertissement);
         } else {
-<<<<<<< HEAD
             JButton exploiter = new JButton("Exploiter");
             exploiter.addActionListener(e -> {
                 // Vérifie si l'action peut être effectuée (nombre d'actions restantes), puis exploite la forêt
@@ -152,9 +146,6 @@ public class Foret extends TypeTerrain {
                 frame.dispose();
             });
             buttonPanel.add(exploiter);
-=======
-             
->>>>>>> IHM
 
             JButton raser = new JButton("Raser");
             raser.addActionListener(e -> {
@@ -247,10 +238,6 @@ public class Foret extends TypeTerrain {
             buttonPanel.add(construire);
         }
 // Configuration et affichage de la PREMIÈRE fenêtre
-<<<<<<< HEAD
-=======
->>>>>>> Stashed changes
->>>>>>> IHM
         panel.add(buttonPanel);
 
         frame.add(panel);
