@@ -114,6 +114,7 @@ public class Lac extends TypeTerrain {
         });
         buttonPanel.add(exploiter);
 
+<<<<<<< Updated upstream
         JButton remplire = new JButton("Remplir");
         remplire.addActionListener(e -> {
             if (nb_tour()) {
@@ -122,6 +123,193 @@ public class Lac extends TypeTerrain {
             frame.dispose();
         });
         buttonPanel.add(remplire);
+=======
+
+        if (modeTuto) {
+            // En mode tuto, on remplace les boutons par un message explicatif explicite
+            JLabel labelAvertissement = new JLabel("⚠️ Action impossible. Construisez d'abord votre Ville sur une Plaine !");
+            labelAvertissement.setForeground(Color.RED);
+            buttonPanel.add(labelAvertissement);
+        } else {
+            
+
+            JButton remplire = new JButton("Remplir");
+            remplire.addActionListener(e -> {
+                if (nb_tour()) {
+                    remplir();
+                }else {
+                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
+                }
+                frame.dispose();
+            });
+            buttonPanel.add(remplire);
+
+            JButton construire = new JButton("Construire");
+            construire.addActionListener(e -> {
+
+                    // 1. Création de la DEUXIÈME fenêtre
+                    JFrame frame1 = new JFrame("Construire");
+
+                    JPanel panel1 = new JPanel();
+                    panel1.setLayout(new BorderLayout()); // Correction ici : panel1 et non panel
+
+                    JPanel panel2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                    JLabel label = new JLabel("Constructions possibles:");
+                    panel1.add(label, BorderLayout.NORTH); // Optionnel : pour un meilleur rendu visuel
+
+                    JButton ex = new JButton("Exploitation");
+                    ex.addActionListener(new ActionListener() {
+
+                            @Override
+                            public void actionPerformed (ActionEvent e){
+                                if (nb_tour()) {
+                            int niveau = 1;
+                            Partie currentPartie = getParent().getCarte().getPartie();
+                            if (currentPartie != null && currentPartie.getVille() != null) {
+                                niveau = currentPartie.getVille().getNiveau();
+                            }
+                            Exploitation exploitation = new Exploitation(niveau);
+                            if (currentPartie.getRessources() >= exploitation.getCout()) {
+
+                                // 2. On DÉDUIT le coût de la construction du compte de la Partie
+                                currentPartie.setRessources(currentPartie.getRessources() - exploitation.getCout());
+
+                                // 3. On construit physiquement le bâtiment
+                                getParent().construire(exploitation);
+                                getParent().setOccupation(true);
+                                frame1.dispose();
+
+                                // 4. On rafraîchit l'interface
+                                currentPartie.notifyMapChanged();
+                                currentPartie.notifyUpdateListener();
+
+                            } else {
+                                // Si pas assez d'argent, on avertit le joueur sans fermer le menu
+                                JOptionPane.showMessageDialog(frame1, "Ressources insuffisantes ! Coût : " + exploitation.getCout(), "Erreur", JOptionPane.WARNING_MESSAGE);
+                            }
+                        }else {
+                                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
+                                }
+                        }
+                    });
+                    panel2.add(ex);
+
+                    JButton hydro = new JButton("Hydrolienne");
+                    hydro.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed (ActionEvent e){
+                            if (nb_tour()) {
+                            int niveau = 1;
+                            Partie currentPartie = getParent().getCarte().getPartie();
+                            if (currentPartie != null && currentPartie.getVille() != null) {
+                                niveau = currentPartie.getVille().getNiveau();
+                            }
+                            Hydrolienne hydro = new Hydrolienne(niveau);
+                            if (currentPartie.getRessources() >= hydro.getCout()) {
+
+                                // 2. On DÉDUIT le coût de la construction du compte de la Partie
+                                currentPartie.setRessources(currentPartie.getRessources() - hydro.getCout());
+
+                                // 3. On construit physiquement le bâtiment
+                                getParent().construire(hydro);
+                                getParent().setOccupation(true);
+                                frame1.dispose();
+
+                                // 4. On rafraîchit l'interface
+                                currentPartie.notifyMapChanged();
+                                currentPartie.notifyUpdateListener();
+
+                            } else {
+                                // Si pas assez d'argent, on avertit le joueur sans fermer le menu
+                                JOptionPane.showMessageDialog(frame1, "Ressources insuffisantes ! Coût : " + hydro.getCout(), "Erreur", JOptionPane.WARNING_MESSAGE);
+                            }
+                        }else {
+                                JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
+                            }
+                        }
+                    });
+                    panel2.add(hydro);
+
+                    JButton eol = new JButton("Eolienne");
+                    eol.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                                if (nb_tour()) {
+                            int niveau = 1;
+                            Partie currentPartie = getParent().getCarte().getPartie();
+                            if (currentPartie != null && currentPartie.getVille() != null) {
+                                niveau = currentPartie.getVille().getNiveau();
+                            }
+                            Eolienne eolienne = new Eolienne(niveau);
+                            if (currentPartie.getRessources() >= eolienne.getCout()) {
+
+                                // 2. On DÉDUIT le coût de la construction du compte de la Partie
+                                currentPartie.setRessources(currentPartie.getRessources() - eolienne.getCout());
+
+                                // 3. On construit physiquement le bâtiment
+                                getParent().construire(eolienne);
+                                getParent().setOccupation(true);
+                                frame1.dispose();
+
+                                // 4. On rafraîchit l'interface
+                                currentPartie.notifyMapChanged();
+                                currentPartie.notifyUpdateListener();
+
+                            } else {
+                                // Si pas assez d'argent, on avertit le joueur sans fermer le menu
+                                JOptionPane.showMessageDialog(frame1, "Ressources insuffisantes ! Coût : " + eolienne.getCout(), "Erreur", JOptionPane.WARNING_MESSAGE);
+                            }
+                        }else {
+                                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
+                                }
+                        }
+                    });
+                    panel2.add(eol);
+
+                    JButton del = new JButton("Détruire");
+                    del.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if (nb_tour()) {
+                                int niveau = 1;
+                                Partie currentPartie = getParent().getCarte().getPartie();
+                                if (currentPartie != null && currentPartie.getVille() != null) {
+                                    niveau = currentPartie.getVille().getNiveau();
+                                }
+
+                                getParent().detruire();
+                                getParent().setOccupation(false);
+                                frame1.dispose();
+                                if (currentPartie != null) {
+                                    currentPartie.notifyMapChanged();
+                                    currentPartie.notifyUpdateListener();
+                                }
+                            }else {
+                                JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
+                            }
+                        }
+                    });
+                    panel2.add(del);
+
+
+
+                    panel1.add(panel2, BorderLayout.CENTER);
+
+                    frame1.add(panel1);
+
+                    // CORRECTION : On applique les configurations à frame1 et on utilise DISPOSE_ON_CLOSE
+                    frame1.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    frame1.pack();
+                    frame1.setLocationRelativeTo(null);
+                    frame1.setVisible(true);
+
+                    // CORRECTION : On ne ferme la première fenêtre QUE si la condition nb_tour() est vraie
+                    frame.dispose();
+
+            });
+            buttonPanel.add(construire);
+        }
+>>>>>>> Stashed changes
 
         panel.add(buttonPanel);
 

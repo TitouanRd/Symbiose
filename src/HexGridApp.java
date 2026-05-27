@@ -266,6 +266,36 @@ public class HexGridApp extends JPanel {
         return list;
     }
 
+<<<<<<< Updated upstream
+=======
+    private BufferedImage getSpriteByType(String type) {
+        if (type == null) return null;
+        BufferedImage sprite = sprites.get(type);
+        if (sprite == null) {
+            sprite = sprites.get(type.toLowerCase());
+        }
+        return sprite;
+    }
+
+    private BufferedImage getTerrainSprite(Case caseType) {
+        if (caseType == null || caseType.getTypeTerrain() == null) return null;
+        return getSpriteByType(caseType.getTypeTerrain().getClass().getSimpleName());
+    }
+
+    private BufferedImage getConstructionSprite(Case caseType) {
+        if (caseType == null || caseType.getConstruction() == null) return null;
+        
+        String constructionName = caseType.getConstruction().getClass().getSimpleName();
+        String terrainName = caseType.getTypeTerrain().getClass().getSimpleName();
+        
+        // Chercher d'abord avec terrain_construction (ex: "eolienne_plaine")
+        BufferedImage sprite = getSpriteByType(constructionName + "_" + terrainName);
+        if (sprite != null) return sprite;
+        
+        // Sinon utiliser juste le nom de la construction
+        return getSpriteByType(constructionName);
+    }
+>>>>>>> Stashed changes
 
     //raffraichie la grille en fonction de la carte
     public void refresh() {
@@ -308,6 +338,7 @@ public class HexGridApp extends JPanel {
 
         for (HexagonTile h : hexagons) {
             h.render(g2d);
+<<<<<<< Updated upstream
             // Si la souris est proche du centre (collision)
             if (h.getCentre().distance(mousePos) < h.getMinimalRadius()) {
                 h.triggerHighlight();
@@ -318,6 +349,8 @@ public class HexGridApp extends JPanel {
                     }
                 }
             }
+=======
+>>>>>>> Stashed changes
         }
     }
 }
