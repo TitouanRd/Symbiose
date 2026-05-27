@@ -9,7 +9,7 @@ public class Hydrolienne extends ProdEnergie{
         switch (niveau) {
             case 1 -> {
                 this.setCout(80);
-                this.setProductionEnergie(0);
+                this.setProductionEnergie(10);
                 this.setProductionRess(0);
 
                 this.setEntretienEnergie(1);
@@ -24,7 +24,7 @@ public class Hydrolienne extends ProdEnergie{
             }
             case 2 -> {
                 this.setCout(200);
-                this.setProductionEnergie(0);
+                this.setProductionEnergie(15);
                 this.setProductionRess(0);
 
                 this.setEntretienEnergie(3);
@@ -109,7 +109,7 @@ public class Hydrolienne extends ProdEnergie{
                 // Division par 100 pour garder les valeurs de jeu équilibrées
                 float productionBrute = (vitesseCourant * this.profondeur * this.getRendement()) / 100f;
 
-                enrg_prod = productionBrute * facteurQualite;
+                enrg_prod = this.getProductionEnergie() + productionBrute * facteurQualite;
 
             } else if (vitesseCourant > 80f) {
                 // Courant destructeur : mise en drapeau/sécurité, production coupée

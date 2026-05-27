@@ -9,7 +9,7 @@ public class PanneauSolaire extends ProdEnergie{
         switch (niveau) {
             case 1 -> {
                 this.setCout(50);
-                this.setProductionEnergie(0);
+                this.setProductionEnergie(15);
                 this.setProductionRess(0);
 
                 this.setEntretienEnergie(1);  // Onduleurs
@@ -24,7 +24,7 @@ public class PanneauSolaire extends ProdEnergie{
             }
             case 2 -> {
                 this.setCout(120);
-                this.setProductionEnergie(0);
+                this.setProductionEnergie(20);
                 this.setProductionRess(0);
 
                 this.setEntretienEnergie(2);
@@ -107,7 +107,7 @@ public class PanneauSolaire extends ProdEnergie{
             float productionBrute = (ensoleillement * this.exposition * this.getRendement()) / 100f;
 
             // 4. Résultat final
-            enrg_prod = productionBrute * facteurQualite * facteurChaleur;
+            enrg_prod = this.getProductionEnergie()+ productionBrute * facteurQualite * facteurChaleur;
         }
         return enrg_prod;
     }

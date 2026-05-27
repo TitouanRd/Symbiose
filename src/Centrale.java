@@ -10,7 +10,7 @@ public class Centrale extends ProdEnergie{
         switch (niveau) {
             case 1 -> {
                 this.setCout(150);
-                this.setProductionEnergie(0);
+                this.setProductionEnergie(5);
                 this.setProductionRess(0);
 
                 this.setEntretienEnergie(5);
@@ -28,7 +28,7 @@ public class Centrale extends ProdEnergie{
             }
             case 2 -> {
                 this.setCout(400); // Investissement massif
-                this.setProductionEnergie(0);
+                this.setProductionEnergie(10);
                 this.setProductionRess(0);
 
                 this.setEntretienEnergie(15);
@@ -104,7 +104,7 @@ public class Centrale extends ProdEnergie{
 
             // 2. Production de base forte (basée sur le rendement : ex 20 ou 60)
             // On multiplie par un facteur fixe (ex: 5) pour avoir de grosses valeurs (100 à 300)
-            float productionBrute = this.getRendement() * 5f;
+            float productionBrute = this.getRendement() * this.getProductionEnergie();
 
             // 3. Facteur Qualité (l'encrassement des turbines)
             // 100 de qualité = 100% de production. 50 de qualité = 50% de prod.

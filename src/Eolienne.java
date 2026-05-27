@@ -8,7 +8,7 @@ public class Eolienne extends ProdEnergie{
         switch (niveau) {
             case 1 -> {
                 this.setCout(60);
-                this.setProductionEnergie(0); // Calculé dynamiquement via le vent
+                this.setProductionEnergie(10); // Calculé dynamiquement via le vent
                 this.setProductionRess(0);
 
                 this.setEntretienEnergie(1);  // Électronique de contrôle
@@ -23,7 +23,7 @@ public class Eolienne extends ProdEnergie{
             }
             case 2 -> {
                 this.setCout(150);
-                this.setProductionEnergie(0);
+                this.setProductionEnergie(15);
                 this.setProductionRess(0);
 
                 this.setEntretienEnergie(3);
@@ -98,7 +98,7 @@ public class Eolienne extends ProdEnergie{
             // On multiplie le vent par la hauteur du mât et le rendement de la génératrice
             float productionBrute = (vitesseVent * this.getHauteur() * this.getRendement()) / 100f;
 
-            enrg_prod = productionBrute * facteurQualite;
+            enrg_prod = this.getProductionEnergie()+ productionBrute * facteurQualite;
         }
 
         return enrg_prod;

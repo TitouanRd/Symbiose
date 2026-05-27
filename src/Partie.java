@@ -145,7 +145,7 @@ public class Partie {
 
         // 2. Mise à jour des stocks
         this.ressources += retours[0].intValue();
-        this.production_energie += retours[1].intValue();
+        this.production_energie = retours[1].intValue();
 
         // --- VÉRIFICATIONS DES CONDITIONS DE DÉFAITE (Priorité absolue) ---
 
