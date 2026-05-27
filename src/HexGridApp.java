@@ -333,6 +333,11 @@ public class HexGridApp extends JPanel {
         return list;
     }
 
+<<<<<<< HEAD
+=======
+<<<<<<< Updated upstream
+=======
+>>>>>>> IHM
     private BufferedImage getSpriteByType(String type) {
         if (type == null) return null;
         BufferedImage sprite = sprites.get(type);
@@ -349,8 +354,23 @@ public class HexGridApp extends JPanel {
 
     private BufferedImage getConstructionSprite(Case caseType) {
         if (caseType == null || caseType.getConstruction() == null) return null;
+<<<<<<< HEAD
         return getSpriteByType(caseType.getConstruction().getClass().getSimpleName());
     }
+=======
+        
+        String constructionName = caseType.getConstruction().getClass().getSimpleName();
+        String terrainName = caseType.getTypeTerrain().getClass().getSimpleName();
+        
+        // Chercher d'abord avec terrain_construction (ex: "eolienne_plaine")
+        BufferedImage sprite = getSpriteByType(constructionName + "_" + terrainName);
+        if (sprite != null) return sprite;
+        
+        // Sinon utiliser juste le nom de la construction
+        return getSpriteByType(constructionName);
+    }
+>>>>>>> Stashed changes
+>>>>>>> IHM
 
     //raffraichie la grille en fonction de la carte
     public void refresh() {
@@ -386,8 +406,13 @@ public class HexGridApp extends JPanel {
         // Dessine toutes les tuiles
         for (HexagonTile h : hexagons) {
             h.render(g2d);
+<<<<<<< HEAD
 
             // Gère les effets de survol de la souris (Highlight)
+=======
+<<<<<<< Updated upstream
+            // Si la souris est proche du centre (collision)
+>>>>>>> IHM
             if (h.getCentre().distance(mousePos) < h.getMinimalRadius()) {
                 h.triggerHighlight();
                 for(HexagonTile n : hexagons) {
@@ -396,6 +421,8 @@ public class HexGridApp extends JPanel {
                     }
                 }
             }
+=======
+>>>>>>> Stashed changes
         }
     }
 }
