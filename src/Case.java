@@ -52,7 +52,12 @@ public class Case {
     }
 
     public Number[] fin_Tour() {
-        this.meteo.modificationMeteo();
+        if (this.meteo == null) {
+            this.meteo = new Meteo("Clair", 50f, 50f, 50f, 0f, 0f);
+        }
+
+        // SÉCURITÉ 2 : On passe 'this' en paramètre pour l'analyse des voisines
+        this.meteo.modificationMeteo(this);
 
         // --- 1. DIFFUSION ENVIRONNEMENTALE (Interaction avec les voisines) ---
         if (this.voisines != null) {
