@@ -230,7 +230,7 @@ public class Foret extends TypeTerrain {
         panel.add(buttonPanel);
 
         frame.add(panel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // La fenêtre principale quitte le programme
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);// La fenêtre principale quitte le programme
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
