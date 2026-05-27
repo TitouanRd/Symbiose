@@ -124,19 +124,6 @@ public class Lac extends TypeTerrain {
             labelAvertissement.setForeground(Color.RED);
             buttonPanel.add(labelAvertissement);
         } else {
-            // Le jeu standard reprend si la ville est construite
-            JButton exploiter = new JButton("Exploiter");
-            exploiter.addActionListener(e -> {
-                if (nb_tour()) { // vérifie si le joueur a des actions restantes pour exploiter le lac
-                    exploiter();
-                }else {
-                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
-                }
-                frame.dispose();
-
-
-            });
-            buttonPanel.add(exploiter);
 
             JButton remplire = new JButton("Remplir");
             remplire.addActionListener(e -> {

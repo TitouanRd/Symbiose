@@ -135,17 +135,6 @@ public class Foret extends TypeTerrain {
             labelAvertissement.setForeground(Color.RED);
             buttonPanel.add(labelAvertissement);
         } else {
-            JButton exploiter = new JButton("Exploiter");
-            exploiter.addActionListener(e -> {
-                // Vérifie si l'action peut être effectuée (nombre d'actions restantes), puis exploite la forêt
-                if (nb_tour()) {
-                    exploiter();
-                }else {
-                    JOptionPane.showMessageDialog(frame, "Vous n'avez plus d'actions disponibles pour ce tour !");
-                }
-                frame.dispose();
-            });
-            buttonPanel.add(exploiter);
 
             JButton raser = new JButton("Raser");
             raser.addActionListener(e -> {

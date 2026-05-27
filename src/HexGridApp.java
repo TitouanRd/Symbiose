@@ -348,9 +348,18 @@ public class HexGridApp extends JPanel {
     }
 
     private BufferedImage getConstructionSprite(Case caseType) {
-        if (caseType == null || caseType.getConstruction() == null) return null;
-        return getSpriteByType(caseType.getConstruction().getClass().getSimpleName());
-    }
+    if (caseType == null || caseType.getConstruction() == null) return null;
+    
+    String constructionName = caseType.getConstruction().getClass().getSimpleName();
+    String terrainName = caseType.getTypeTerrain().getClass().getSimpleName();
+    
+    // Chercher d'abord avec terrain_construction (ex: "eolienne_plaine")
+    BufferedImage sprite = getSpriteByType(constructionName + "_" + terrainName);
+    if (sprite != null) return sprite;
+    
+    // Sinon utiliser juste le nom de la construction
+    return getSpriteByType(constructionName);
+}
 
     //raffraichie la grille en fonction de la carte
     public void refresh() {
