@@ -81,8 +81,8 @@ public class Carte {
 
                 // 1. Poids de base (Probabilités de départ)
                 int poidsPlaine = 100; // Très dominant par défaut
-                int poidsForet = 35;
-                int poidsLac = 10;
+                int poidsForet = 45;
+                int poidsLac = 20;
 
                 // 2. Bonus de voisinage (Haut et Gauche)
                 // On regarde la case à gauche
